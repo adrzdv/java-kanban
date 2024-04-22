@@ -8,10 +8,12 @@ public class Subtask extends Task{
     }
 
     public String getEpicName(){
+
         return epicName;
     }
 
     public String setEpicName(String epicName){
+
         return this.epicName = epicName;
     }
 

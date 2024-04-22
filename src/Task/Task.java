@@ -26,14 +26,17 @@ public class Task {
     }
 
     public String getDescriptionTask(){
+
         return descriptionTask;
     }
 
     public String setNameTask(String nameTask){
+
         return this.nameTask = nameTask;
     }
 
     public String setDescriptionTask(String descriptionTask){
+
         return this.descriptionTask = descriptionTask;
     }
 
