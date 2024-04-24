@@ -65,8 +65,10 @@ public class TaskManager {
 
     public void updateEpic(Epic newEpic) {
         if (epicList.containsKey(newEpic.getId())){
-            Epic someEpic = epicList.get(newEpic.getId());
-            if (someEpic.equals(newEpic)){
+            Epic epicForReplace = epicList.get(newEpic.getId());
+            ArrayList<Integer> subtasks = new ArrayList<>(epicForReplace.getSubtaskID());
+            if (epicForReplace.equals(newEpic)){
+                newEpic.setSubTask(subtasks);
                 epicList.put(newEpic.getId(), newEpic);
             }
         }
