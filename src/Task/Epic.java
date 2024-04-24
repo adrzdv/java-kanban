@@ -9,7 +9,6 @@ public class Epic extends Task {
 
     }
 
-
     public ArrayList<Integer> getSubtaskID(){
 
         return this.subtaskID;

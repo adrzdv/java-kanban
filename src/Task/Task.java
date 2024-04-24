@@ -1,11 +1,13 @@
 package Task;
 
+import java.util.Objects;
+
 public class Task {
 
     protected String nameTask;
     protected String descriptionTask;
     protected Status statusTask;
-    protected int taskId;
+    protected Integer taskId;
 
 
     public Task(String newNameTask, String newDescriptionTask, Status newStatus){
@@ -49,6 +51,23 @@ public class Task {
 
     public int getId(){
         return this.taskId;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Task otherTask = (Task) obj;
+        return Objects.equals(taskId, otherTask.taskId);
+    }
+
+    @Override
+    public int hashCode(){
+        int hash = 17;
+        if (taskId != null){
+            hash = hash + taskId.hashCode();
+        }
+        return hash;
     }
 
 }
