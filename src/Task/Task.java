@@ -5,6 +5,8 @@ public class Task {
     protected String nameTask;
     protected String descriptionTask;
     protected Status statusTask;
+    protected int taskId;
+
 
     public Task(String newNameTask, String newDescriptionTask, Status newStatus){
         this.nameTask = newNameTask;
@@ -12,6 +14,7 @@ public class Task {
         this.statusTask = newStatus;
 
     }
+
 
     public Status getStatusTask(){
         return statusTask;
@@ -38,6 +41,14 @@ public class Task {
     public String setDescriptionTask(String descriptionTask){
 
         return this.descriptionTask = descriptionTask;
+    }
+
+    public int setId(int taskId){
+        return this.taskId = taskId;
+    }
+
+    public int getId(){
+        return this.taskId;
     }
 
 }

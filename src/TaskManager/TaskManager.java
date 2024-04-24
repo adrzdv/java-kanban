@@ -12,32 +12,33 @@ public class TaskManager {
     private HashMap<Integer, Subtask> subtaskList = new HashMap<>();
 
     public void addTask(Task newTask) {
-        int newID = getID();
-        taskList.put(newID, newTask);
+        int newId = getID();
+        newTask.setId(newId);
+        taskList.put(newId, newTask);
     }
 
     public void addEpic(Epic newEpic) {
-        int newID = getID();
-        epicList.put(newID, newEpic);
+        int newId = getID();
+        newEpic.setId(newId);
+        epicList.put(newId, newEpic);
     }
 
     public void addSubtask(Subtask newSubtask) {
-        int newID = getID();
-        subtaskList.put(newID, newSubtask);
-        String epicName = newSubtask.getEpicName();
-        for (Epic epic : epicList.values()) {
-            if (epic.getNameTask().equals(epicName)) {
-                if (epic.getSubtaskID() == null) {
-                    ArrayList<Integer> newSubtasks = new ArrayList<>();
-                    newSubtasks.add(newID);
-                    epic.setSubTask(newSubtasks);
-                } else {
-                    epic.getSubtaskID().add(newID);
-                }
-
+        int newId = getID();
+        newSubtask.setId(newId);
+        subtaskList.put(newId, newSubtask);
+        int epicId = newSubtask.getEpicId();
+        if (epicList.containsKey(epicId)){
+            Epic epic = epicList.get(epicId);
+            if(epic.getSubtaskID() == null){
+                ArrayList<Integer> newSubtasks = new ArrayList<>();
+                newSubtasks.add(newId);
+                epic.setSubTask(newSubtasks);
+            } else {
+                epic.getSubtaskID().add(newId);
             }
         }
-    }
+     }
 
     public void delAllTasks() {
         taskList.clear();
@@ -46,29 +47,20 @@ public class TaskManager {
     }
 
     public void updateTask(Task newTask) {
-        for (int taskId : taskList.keySet()){
-            Task taskForUpdate = taskList.get(taskId);
-            if (taskForUpdate.equals(newTask)){
-                taskList.put(taskId,newTask);
+        if (taskList.containsKey(newTask.getId())){
+            if (taskList.get(newTask.getId()).equals(newTask)){
+                taskList.put(newTask.getId(),newTask);
             }
         }
     }
 
-    public void updateSubtask(Subtask newSubtask) {
-        for (int taskId : subtaskList.keySet()){
-            Subtask subtaskForUpdate = subtaskList.get(taskId);
-            if(subtaskForUpdate.equals(newSubtask)){
-                subtaskList.put(taskId,newSubtask);
-                for (Epic epic : epicList.values()) {
-                    String epicName = epic.getNameTask();
-                    ArrayList<Integer> subtaskId = epic.getSubtaskID();
-                    if (epicName.equals(subtaskForUpdate.getEpicName()) && subtaskId.contains(taskId)) {
-                        changeEpicStatus(epic);
-                    }
-                }
+    public void updateSubtask(Subtask newSubtask){
+        if (subtaskList.containsKey(newSubtask.getId())){
+            if (subtaskList.get(newSubtask.getId()).equals(newSubtask)){
+                subtaskList.put(newSubtask.getId(), newSubtask);
+                changeEpicStatus(epicList.get(newSubtask.getEpicId()));
             }
         }
-
     }
 
     public void updateEpic(Epic newEpic) {
@@ -80,21 +72,15 @@ public class TaskManager {
                 epicList.put(taskId,newEpic);
             }
         }
-
     }
 
-
     public void deleteSubtaskById(int subtaskId) {
+
         if (subtaskList.containsKey(subtaskId)) {
             Subtask subTask = subtaskList.get(subtaskId);
-            String epicName = subTask.getEpicName();
-            for (Epic epic : epicList.values()) {
-                String nameEpic = epic.getNameTask();
-                ArrayList<Integer> subtasksId = epic.getSubtaskID();
-                if (nameEpic.equals(epicName) && subtasksId.contains(subtaskId)) {
-                    epic.getSubtaskID().remove(epic.getSubtaskID().indexOf(subtaskId));
-                }
-            }
+            int epicId = subTask.getEpicId();
+            Epic epic = epicList.get(epicId);
+            epic.getSubtaskID().remove(epic.getSubtaskID().indexOf(subtaskId));
             subtaskList.remove(subtaskId);
         }
     }
@@ -113,25 +99,23 @@ public class TaskManager {
     }
 
     public void deleteTaskById(int taskId) {
-        if (taskList.containsKey(taskId)) {
-            taskList.remove(taskId);
-        }
+        taskList.remove(taskId);
     }
 
 
     public Task getTaskById(int taskId) {
 
-        return taskList.getOrDefault(taskId, null);
+        return taskList.get(taskId);
     }
 
     public Subtask getSubtaskById(int taskId) {
 
-        return subtaskList.getOrDefault(taskId, null);
+        return subtaskList.get(taskId);
     }
 
     public Epic getEpicById(int taskId) {
 
-        return epicList.getOrDefault(taskId, null);
+        return epicList.get(taskId);
     }
 
     public ArrayList<Subtask> getSubtasksByEpic(Epic epic) {
@@ -148,40 +132,23 @@ public class TaskManager {
     }
 
     public ArrayList<Task> getAllTasks() {
-        ArrayList<Task> result = new ArrayList<>();
-        if (!taskList.isEmpty()) {
-            for (Task task : taskList.values()) {
-                result.add(task);
-            }
-        } else {
-            result = null;
-        }
+
+        ArrayList<Task> result = new ArrayList<>(taskList.values());
 
         return result;
     }
 
     public ArrayList<Subtask> getAllSubtask() {
 
-        ArrayList<Subtask> result = new ArrayList<>();
-        if (!subtaskList.isEmpty()) {
-            for (Subtask subtask : subtaskList.values()) {
-                result.add(subtask);
-            }
-        } else {
-            result = null;
-        }
+        ArrayList<Subtask> result = new ArrayList<>(subtaskList.values());
+
         return result;
     }
 
     public ArrayList<Epic> getAllEpic() {
-        ArrayList<Epic> result = new ArrayList<>();
-        if (!epicList.isEmpty()) {
-            for (Epic epic : epicList.values()) {
-                result.add(epic);
-            }
-        } else {
-            result = null;
-        }
+
+        ArrayList<Epic> result = new ArrayList<>(epicList.values());
+
         return result;
     }
 

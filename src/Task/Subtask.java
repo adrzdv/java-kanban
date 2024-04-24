@@ -1,20 +1,20 @@
 package Task;
 
 public class Subtask extends Task{
-    protected String epicName;
-    public Subtask(String newNameTask, String newDescriptionTask, Status newStatus, String newEpicName) {
+    protected int epicId;
+    public Subtask(String newNameTask, String newDescriptionTask, Status newStatus, int newEpicId) {
         super(newNameTask, newDescriptionTask, newStatus);
-        this.epicName = newEpicName;
+        this.epicId = newEpicId;
     }
 
-    public String getEpicName(){
+    public int getEpicId(){
 
-        return epicName;
+        return epicId;
     }
 
-    public String setEpicName(String epicName){
+    public int setEpicId(int epicId){
 
-        return this.epicName = epicName;
+        return this.epicId = epicId;
     }
 
 
