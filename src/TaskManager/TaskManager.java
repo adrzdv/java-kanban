@@ -48,18 +48,15 @@ public class TaskManager {
 
     public void updateTask(Task newTask) {
         if (taskList.containsKey(newTask.getId())){
-            if (taskList.get(newTask.getId()).equals(newTask)){
-                taskList.put(newTask.getId(),newTask);
-            }
+            taskList.put(newTask.getId(),newTask);
         }
     }
 
     public void updateSubtask(Subtask newSubtask){
         if (subtaskList.containsKey(newSubtask.getId())){
-            if (subtaskList.get(newSubtask.getId()).equals(newSubtask)){
-                subtaskList.put(newSubtask.getId(), newSubtask);
-                changeEpicStatus(epicList.get(newSubtask.getEpicId()));
-            }
+            subtaskList.put(newSubtask.getId(), newSubtask);
+            changeEpicStatus(epicList.get(newSubtask.getEpicId()));
+
         }
     }
 
@@ -67,10 +64,9 @@ public class TaskManager {
         if (epicList.containsKey(newEpic.getId())){
             Epic epicForReplace = epicList.get(newEpic.getId());
             ArrayList<Integer> subtasks = new ArrayList<>(epicForReplace.getSubtaskID());
-            if (epicForReplace.equals(newEpic)){
-                newEpic.setSubTask(subtasks);
-                epicList.put(newEpic.getId(), newEpic);
-            }
+            newEpic.setSubTask(subtasks);
+            epicList.put(newEpic.getId(), newEpic);
+
         }
     }
 
