@@ -210,17 +210,4 @@ public class InMemoryTaskManager implements TaskManager {
 
     }
 
-    /*@Override
-    public ArrayList<Task> getHistory(){
-        return history;
-    }*/
-
-    /*private <T extends Task> void updateHistory(int taskId, HashMap<Integer,T> taskType){
-        if(history.size() < 10){
-            history.add(taskType.get(taskId));
-        } else {
-            history.remove(0);
-            history.add(taskType.get(taskId));
-        }
-    }*/
 }
