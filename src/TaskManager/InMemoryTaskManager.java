@@ -183,14 +183,13 @@ public class InMemoryTaskManager implements TaskManager {
         return result;
     }
 
-    @Override
-    public int getID() {
+    private int getID() {
 
         return id++;
     }
 
-    @Override
-    public void changeEpicStatus(Epic epic) {
+
+    private void changeEpicStatus(Epic epic) {
         if (epic.getSubtaskID() != null) {
 
             int kol = epic.getSubtaskID().size();

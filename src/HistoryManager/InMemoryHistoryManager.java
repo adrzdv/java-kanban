@@ -7,14 +7,13 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     ArrayList<Task> history = new ArrayList<>();
     @Override
-    public<T extends Task> void add (T task){
+    public void add (Task task){
 
-        if(history.size() < 10){
-            history.add(task);
-        } else {
-            history.remove(0);
-            history.add(task);
+        if(history.size() >= 10){
+            history.removeFirst();
         }
+        history.add(task);
+
     }
 
     @Override

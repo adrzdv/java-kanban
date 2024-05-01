@@ -5,9 +5,8 @@ import Task.*;
 import java.util.ArrayList;
 
 public interface TaskManager {
-    int getID();
+
     HistoryManager getHistory();
-    void changeEpicStatus(Epic epic);
     void addTask(Task newTask);
     void addEpic(Epic newEpic);
     void addSubtask(Subtask newSubtask);
