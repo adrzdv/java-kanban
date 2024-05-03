@@ -4,18 +4,19 @@ import HistoryManager.*;
 import Task.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 
 public class InMemoryTaskManager implements TaskManager {
     private int id = 1;
-    private HashMap<Integer, Task> taskList = new HashMap<>();
-    private HashMap<Integer, Epic> epicList = new HashMap<>();
-    private HashMap<Integer, Subtask> subtaskList = new HashMap<>();
-    private HistoryManager manager = Manager.getDefaultHistory();
+    private final HashMap<Integer, Task> taskList = new HashMap<>();
+    private final HashMap<Integer, Epic> epicList = new HashMap<>();
+    private final HashMap<Integer, Subtask> subtaskList = new HashMap<>();
+    private final HistoryManager manager = Manager.getDefaultHistory();
 
     @Override
-    public HistoryManager getHistory(){
-        return this.manager;
+    public List<Task> getHistory(){
+        return manager.getHistory();
     }
     @Override
     public void addTask(Task newTask) {
@@ -145,8 +146,8 @@ public class InMemoryTaskManager implements TaskManager {
 
 
     @Override
-    public ArrayList<Subtask> getSubtasksByEpic(Epic epic) {
-        ArrayList<Subtask> result = new ArrayList<>();
+    public List<Subtask> getSubtasksByEpic(Epic epic) {
+        List<Subtask> result = new ArrayList<>();
 
         if (epicList.containsValue(epic)) {
             for (Integer subID : epic.getSubtaskID()) {
@@ -160,25 +161,25 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getAllTasks() {
+    public List<Task> getAllTasks() {
 
-        ArrayList<Task> result = new ArrayList<>(taskList.values());
-
-        return result;
-    }
-
-    @Override
-    public ArrayList<Subtask> getAllSubtask() {
-
-        ArrayList<Subtask> result = new ArrayList<>(subtaskList.values());
+        List<Task> result = new ArrayList<>(taskList.values());
 
         return result;
     }
 
     @Override
-    public ArrayList<Epic> getAllEpic() {
+    public List<Subtask> getAllSubtask() {
 
-        ArrayList<Epic> result = new ArrayList<>(epicList.values());
+        List<Subtask> result = new ArrayList<>(subtaskList.values());
+
+        return result;
+    }
+
+    @Override
+    public List<Epic> getAllEpic() {
+
+        List<Epic> result = new ArrayList<>(epicList.values());
 
         return result;
     }

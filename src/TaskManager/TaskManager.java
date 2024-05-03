@@ -1,12 +1,11 @@
 package TaskManager;
 
-import HistoryManager.HistoryManager;
 import Task.*;
-import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
 
-    HistoryManager getHistory();
+    List<Task> getHistory();
     void addTask(Task newTask);
     void addEpic(Epic newEpic);
     void addSubtask(Subtask newSubtask);
@@ -20,10 +19,9 @@ public interface TaskManager {
     Task getTaskById(int taskId);
     Subtask getSubtaskById(int taskId);
     Epic getEpicById(int taskId);
-    ArrayList<Subtask> getSubtasksByEpic(Epic epic);
-    ArrayList<Task> getAllTasks();
-    ArrayList<Subtask> getAllSubtask();
-    ArrayList<Epic> getAllEpic();
-
+    List<Subtask> getSubtasksByEpic(Epic epic);
+    List<Task> getAllTasks();
+    List<Subtask> getAllSubtask();
+    List<Epic> getAllEpic();
 
 }
