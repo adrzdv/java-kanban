@@ -5,13 +5,14 @@ import Task.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.HashMap;
 
 public class InMemoryTaskManager implements TaskManager {
     private int id = 1;
-    private final HashMap<Integer, Task> taskList = new HashMap<>();
-    private final HashMap<Integer, Epic> epicList = new HashMap<>();
-    private final HashMap<Integer, Subtask> subtaskList = new HashMap<>();
+    private final Map<Integer, Task> taskList = new HashMap<>();
+    private final Map<Integer, Epic> epicList = new HashMap<>();
+    private final Map<Integer, Subtask> subtaskList = new HashMap<>();
     private final HistoryManager manager = Manager.getDefaultHistory();
 
     @Override
@@ -44,7 +45,7 @@ public class InMemoryTaskManager implements TaskManager {
             Epic epic = epicList.get(epicId);
 
             if(epic.getSubtaskID() == null){
-                ArrayList<Integer> newSubtasks = new ArrayList<>();
+                List<Integer> newSubtasks = new ArrayList<>();
                 newSubtasks.add(newId);
                 epic.setSubTask(newSubtasks);
             } else {
@@ -80,7 +81,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateEpic(Epic newEpic) {
         if (epicList.containsKey(newEpic.getId())){
             Epic epicForReplace = epicList.get(newEpic.getId());
-            ArrayList<Integer> subtasks = new ArrayList<>(epicForReplace.getSubtaskID());
+            List<Integer> subtasks = new ArrayList<>(epicForReplace.getSubtaskID());
             newEpic.setSubTask(subtasks);
             epicList.put(newEpic.getId(), newEpic);
 
@@ -163,25 +164,21 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getAllTasks() {
 
-        List<Task> result = new ArrayList<>(taskList.values());
-
-        return result;
+        return new ArrayList<>(taskList.values());
     }
 
     @Override
     public List<Subtask> getAllSubtask() {
 
-        List<Subtask> result = new ArrayList<>(subtaskList.values());
+        return new ArrayList<>(subtaskList.values());
 
-        return result;
     }
 
     @Override
     public List<Epic> getAllEpic() {
 
-        List<Epic> result = new ArrayList<>(epicList.values());
+        return new ArrayList<>(epicList.values());
 
-        return result;
     }
 
     private int getID() {
