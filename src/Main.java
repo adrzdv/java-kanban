@@ -1,9 +1,9 @@
-import taskPackage.*;
-import taskManagerPackage.InMemoryTaskManager;
+import tasks.*;
+import taskManager.InMemoryTaskManager;
 
 import java.util.List;
 
-import static taskPackage.Status.NEW;
+import static tasks.Status.NEW;
 
 public class Main {
     private static InMemoryTaskManager taskManager = new InMemoryTaskManager();

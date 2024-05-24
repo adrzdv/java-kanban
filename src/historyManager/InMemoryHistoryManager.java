@@ -1,6 +1,6 @@
-package historyManagerPackage;
+package historyManager;
 
-import taskPackage.*;
+import tasks.*;
 
 import java.util.HashMap;
 import java.util.List;

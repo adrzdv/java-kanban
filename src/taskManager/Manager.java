@@ -1,6 +1,6 @@
-package taskManagerPackage;
+package taskManager;
 
-import historyManagerPackage.*;
+import historyManager.*;
 
 public class Manager {
 

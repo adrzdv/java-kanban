@@ -1,8 +1,8 @@
 package Tests;
 
-import taskPackage.*;
+import tasks.*;
 
-import static taskPackage.Status.*;
+import static tasks.Status.*;
 
 import org.junit.jupiter.api.Test;
 

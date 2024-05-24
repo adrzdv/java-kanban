@@ -1,7 +1,7 @@
-package taskManagerPackage;
+package taskManager;
 
-import historyManagerPackage.*;
-import taskPackage.*;
+import historyManager.*;
+import tasks.*;
 
 import java.util.ArrayList;
 import java.util.List;

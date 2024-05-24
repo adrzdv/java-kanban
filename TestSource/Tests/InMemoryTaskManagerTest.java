@@ -1,12 +1,12 @@
 package Tests;
 
-import taskPackage.*;
-import taskManagerPackage.Manager;
+import tasks.*;
+import taskManager.Manager;
 
-import static taskPackage.Status.IN_PROGRESS;
-import static taskPackage.Status.NEW;
+import static tasks.Status.IN_PROGRESS;
+import static tasks.Status.NEW;
 
-import taskManagerPackage.TaskManager;
+import taskManager.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
