@@ -10,7 +10,7 @@ public class Task {
     protected Integer taskId;
 
 
-    public Task(String newNameTask, String newDescriptionTask, Status newStatus){
+    public Task(String newNameTask, String newDescriptionTask, Status newStatus) {
         this.nameTask = newNameTask;
         this.descriptionTask = newDescriptionTask;
         this.statusTask = newStatus;
@@ -18,43 +18,43 @@ public class Task {
     }
 
 
-    public Status getStatusTask(){
+    public Status getStatusTask() {
         return statusTask;
     }
 
-    public Status updateStatusTask(Status newStatus){
+    public Status updateStatusTask(Status newStatus) {
         return statusTask = newStatus;
     }
 
-    public String getNameTask(){
+    public String getNameTask() {
         return nameTask;
     }
 
-    public String getDescriptionTask(){
+    public String getDescriptionTask() {
 
         return descriptionTask;
     }
 
-    public String setNameTask(String nameTask){
+    public String setNameTask(String nameTask) {
 
         return this.nameTask = nameTask;
     }
 
-    public String setDescriptionTask(String descriptionTask){
+    public String setDescriptionTask(String descriptionTask) {
 
         return this.descriptionTask = descriptionTask;
     }
 
-    public int setId(int taskId){
+    public int setId(int taskId) {
         return this.taskId = taskId;
     }
 
-    public int getId(){
+    public int getId() {
         return this.taskId;
     }
 
     @Override
-    public boolean equals(Object obj){
+    public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Task otherTask = (Task) obj;
@@ -62,9 +62,9 @@ public class Task {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         int hash = 17;
-        if (taskId != null){
+        if (taskId != null) {
             hash = hash + taskId.hashCode();
         }
         return hash;
