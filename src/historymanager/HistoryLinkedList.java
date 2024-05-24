@@ -1,4 +1,4 @@
-package historyManager;
+package historymanager;
 
 import java.util.ArrayList;
 import java.util.List;

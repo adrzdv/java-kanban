@@ -1,8 +1,8 @@
-package Tests;
+package tests;
 
-import historyManager.HistoryManager;
+import historymanager.HistoryManager;
 import tasks.Task;
-import taskManager.Manager;
+import taskmanager.Manager;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

@@ -1,5 +1,5 @@
 import tasks.*;
-import taskManager.InMemoryTaskManager;
+import taskmanager.InMemoryTaskManager;
 
 import java.util.List;
 
