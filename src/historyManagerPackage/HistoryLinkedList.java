@@ -1,4 +1,4 @@
-package HistoryManager;
+package historyManagerPackage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ public class HistoryLinkedList<T> {
         public Node<E> next;
         public Node<E> prev;
 
-        public Node(Node<E> prev, E data, Node<E> next){
+        public Node(Node<E> prev, E data, Node<E> next) {
             this.data = data;
             this.prev = prev;
             this.next = next;
@@ -26,11 +26,12 @@ public class HistoryLinkedList<T> {
 
         return tail;
     }
-    public void linkLast(T element){
+
+    public void linkLast(T element) {
         final Node<T> oldTail = tail;
         final Node<T> newNode = new Node<>(oldTail, element, null);
         tail = newNode;
-        if (oldTail == null){
+        if (oldTail == null) {
             head = newNode;
         } else {
             oldTail.next = newNode;
@@ -38,7 +39,7 @@ public class HistoryLinkedList<T> {
         size++;
     }
 
-    public List<T> getTasks(){
+    public List<T> getTasks() {
 
         List<T> returnList = new ArrayList<>();
         if (head != null) {
@@ -53,11 +54,11 @@ public class HistoryLinkedList<T> {
         return returnList;
     }
 
-    public boolean removeNode(Node<T> node){
+    public boolean removeNode(Node<T> node) {
         final Node<T> prevNode = node.prev;
         final Node<T> nextNode = node.next;
 
-        if (prevNode == null && nextNode == null){
+        if (prevNode == null && nextNode == null) {
             this.head = node;
             return false;
         } else {

@@ -1,14 +1,17 @@
-import Task.*;
-import TaskManager.InMemoryTaskManager;
+import taskPackage.*;
+import taskManagerPackage.InMemoryTaskManager;
+
 import java.util.List;
-import static Task.Status.NEW;
+
+import static taskPackage.Status.NEW;
 
 public class Main {
     private static InMemoryTaskManager taskManager = new InMemoryTaskManager();
     private static List<Task> historyTaskList;
+
     public static void main(String[] args) {
-        Epic epicWithoutSub = new Epic("EpicWithOutSub","Epic description",NEW);
-        Epic epicWithSub = new Epic("EpicWithSub","Some description", NEW);
+        Epic epicWithoutSub = new Epic("EpicWithOutSub", "Epic description", NEW);
+        Epic epicWithSub = new Epic("EpicWithSub", "Some description", NEW);
         Subtask subtaskOne = new Subtask("Subtask 1", "Subtask1 description", NEW, 2);
         Subtask subtaskTwo = new Subtask("Subtask 2", "Subtask2 description", NEW, 2);
         Subtask subtaskThree = new Subtask("Subtask 3", "Subtask3 description", NEW, 2);
@@ -54,7 +57,7 @@ public class Main {
 
     }
 
-    public static void printHistoryInCmd(){
+    public static void printHistoryInCmd() {
         historyTaskList = taskManager.getHistory();
         System.out.println(historyTaskList);
     }

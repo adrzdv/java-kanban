@@ -1,13 +1,13 @@
 package Tests;
 
-import HistoryManager.HistoryManager;
-import Task.Task;
-import TaskManager.Manager;
+import historyManagerPackage.HistoryManager;
+import taskPackage.Task;
+import taskManagerPackage.Manager;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static Task.Status.NEW;
+import static taskPackage.Status.NEW;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryHistoryManagerTest {
@@ -17,7 +17,7 @@ class InMemoryHistoryManagerTest {
 
 
     @Test
-    public void isLast(){
+    public void isLast() {
         Task task = new Task("name", "description", NEW);
         Task task2 = new Task("name", "description", NEW);
         task.setId(1);
@@ -26,21 +26,21 @@ class InMemoryHistoryManagerTest {
         historyManager.add(task2);
         historyManager.add(task);
         List<Task> taskHistoryList = historyManager.getHistory();
-        assertEquals(task,taskHistoryList.get(1), "Not the same");
+        assertEquals(task, taskHistoryList.get(1), "Not the same");
     }
 
     @Test
-    public void isNotHaveDublicateWhenOneItem(){
+    public void isNotHaveDublicateWhenOneItem() {
         Task task = new Task("name", "description", NEW);
         task.setId(1);
         historyManager.add(task);
         historyManager.add(task);
         List<Task> taskHistoryList = historyManager.getHistory();
-        assertEquals(1, taskHistoryList.size(),"Dublicated");
+        assertEquals(1, taskHistoryList.size(), "Dublicated");
     }
 
     @Test
-    public void isRemoved(){
+    public void isRemoved() {
         Task task = new Task("name", "description", NEW);
         Task task2 = new Task("name", "description", NEW);
         task.setId(1);
@@ -49,7 +49,7 @@ class InMemoryHistoryManagerTest {
         historyManager.add(task2);
         historyManager.remove(1);
         List<Task> taskHistoryList = historyManager.getHistory();
-        assertEquals(task2,taskHistoryList.get(0),"Not removed");
+        assertEquals(task2, taskHistoryList.get(0), "Not removed");
     }
 
 }
