@@ -1,14 +1,15 @@
-package Tests;
+package tests;
 
-import Task.*;
-import TaskManager.Manager;
+import tasks.*;
+import taskmanager.Manager;
 
-import static Task.Status.IN_PROGRESS;
-import static Task.Status.NEW;
+import static tasks.Status.IN_PROGRESS;
+import static tasks.Status.NEW;
 
-import TaskManager.TaskManager;
+import taskmanager.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
@@ -16,7 +17,7 @@ class InMemoryTaskManagerTest {
     static TaskManager taskManager;
 
     @BeforeEach
-    public void beforeEach(){
+    public void beforeEach() {
 
         Manager manager = new Manager();
         taskManager = manager.getDefault();
@@ -24,24 +25,24 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldNotNullManager(){
-        assertNotNull(manager.getDefaultHistory(),"Is null");
-        assertNotNull(manager.getDefault(),"Is null");
+    public void shouldNotNullManager() {
+        assertNotNull(manager.getDefaultHistory(), "Is null");
+        assertNotNull(manager.getDefault(), "Is null");
     }
 
     @Test
-    public void shouldChangeEpicStatus(){
+    public void shouldChangeEpicStatus() {
         Epic epic = new Epic("name", "Description", NEW);
         taskManager.addEpic(epic);
         Subtask subtask = new Subtask("name", "description", NEW, epic.getId());
         taskManager.addSubtask(subtask);
         subtask.updateStatusTask(IN_PROGRESS);
         taskManager.updateSubtask(subtask);
-        assertEquals(IN_PROGRESS,epic.getStatusTask(),"Not changed");
+        assertEquals(IN_PROGRESS, epic.getStatusTask(), "Not changed");
     }
 
     @Test
-    public void shouldSearchById(){
+    public void shouldSearchById() {
         Task task = new Task("Name", "Description", NEW);
         Epic epic = new Epic("Name", "Description", NEW);
         taskManager.addEpic(epic);
@@ -49,23 +50,23 @@ class InMemoryTaskManagerTest {
         taskManager.addTask(task);
         taskManager.addSubtask(subtask);
         int taskId = task.getId();
-        assertNotNull(taskManager.getTaskById(taskId),"Not found");
+        assertNotNull(taskManager.getTaskById(taskId), "Not found");
         taskId = epic.getId();
-        assertNotNull(taskManager.getEpicById(taskId),"Not found");
+        assertNotNull(taskManager.getEpicById(taskId), "Not found");
         taskId = subtask.getId();
-        assertNotNull(taskManager.getSubtaskById(taskId),"Not found");
+        assertNotNull(taskManager.getSubtaskById(taskId), "Not found");
     }
 
     @Test
-    public void shouldBeTheSameAfterAdd(){
+    public void shouldBeTheSameAfterAdd() {
         Task taskForEqual = new Task("Name", "Description", NEW);
         taskManager.addTask(taskForEqual);
         Task task = taskManager.getTaskById(taskForEqual.getId());
-        assertEquals(taskForEqual,task,"Not the same");
+        assertEquals(taskForEqual, task, "Not the same");
     }
 
     @Test
-    public void generatedAndSetIdNotConflicting(){
+    public void generatedAndSetIdNotConflicting() {
         Task task1 = new Task("name", "description", NEW);
         taskManager.addTask(task1);
         Task task2 = new Task("anotherName", "description", NEW);
