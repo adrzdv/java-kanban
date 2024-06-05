@@ -23,11 +23,11 @@ public class Epic extends Task {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return taskId + "," + TaskType.EPIC + "," + nameTask + "," + statusTask + "," + descriptionTask;
     }
 
-    public static Epic epicFromString (String taskString) {
+    public static Epic epicFromString(String taskString) {
         String[] splitString = taskString.split(",");
         Status newStatus = null;
         switch (splitString[2]) {
@@ -41,7 +41,7 @@ public class Epic extends Task {
                 newStatus = Status.DONE;
                 break;
         }
-        Epic newEpic = new Epic(splitString[1],splitString[3], newStatus);
+        Epic newEpic = new Epic(splitString[1], splitString[3], newStatus);
         newEpic.setId(Integer.parseInt(splitString[0]));
 
         return newEpic;

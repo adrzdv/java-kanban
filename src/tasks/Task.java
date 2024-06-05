@@ -73,11 +73,11 @@ public class Task {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return taskId + "," + TaskType.TASK + "," + nameTask + "," + statusTask + "," + descriptionTask;
     }
 
-    public static Task taskFromString (String taskString) {
+    public static Task taskFromString(String taskString) {
         String[] splitString = taskString.split(",");
         Status newStatus = null;
         switch (splitString[2]) {
@@ -91,7 +91,7 @@ public class Task {
                 newStatus = Status.DONE;
                 break;
         }
-        Task newTask = new Task(splitString[1],splitString[3], newStatus);
+        Task newTask = new Task(splitString[1], splitString[3], newStatus);
         newTask.setId(Integer.parseInt(splitString[0]));
 
         return newTask;

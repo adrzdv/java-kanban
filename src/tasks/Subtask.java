@@ -2,7 +2,6 @@ package tasks;
 
 import taskmanager.TaskType;
 
-import java.io.ObjectInputFilter;
 
 public class Subtask extends Task {
     protected int epicId;
@@ -24,11 +23,11 @@ public class Subtask extends Task {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return taskId + "," + TaskType.SUBTASK + "," + nameTask + "," + statusTask + "," + descriptionTask + "," + epicId;
     }
 
-    public static Subtask subtaskFromString (String subtaskString) {
+    public static Subtask subtaskFromString(String subtaskString) {
         String[] splitString = subtaskString.split(",");
         Status newStatus = null;
         switch (splitString[2]) {
@@ -42,7 +41,7 @@ public class Subtask extends Task {
                 newStatus = Status.DONE;
                 break;
         }
-        Subtask newSubtask = new Subtask(splitString[1],splitString[3], newStatus,Integer.parseInt(splitString[4]));
+        Subtask newSubtask = new Subtask(splitString[1], splitString[3], newStatus, Integer.parseInt(splitString[4]));
         newSubtask.setId(Integer.parseInt(splitString[0]));
 
         return newSubtask;
