@@ -1,5 +1,7 @@
 package tasks;
 
+import taskmanager.TaskType;
+
 import java.util.Objects;
 
 public class Task {
@@ -45,11 +47,11 @@ public class Task {
         return this.descriptionTask = descriptionTask;
     }
 
-    public int setId(int taskId) {
+    public Integer setId(int taskId) {
         return this.taskId = taskId;
     }
 
-    public int getId() {
+    public Integer getId() {
         return this.taskId;
     }
 
@@ -70,5 +72,29 @@ public class Task {
         return hash;
     }
 
+    @Override
+    public String toString(){
+        return taskId + "," + TaskType.TASK + "," + nameTask + "," + statusTask + "," + descriptionTask;
+    }
+
+    public static Task taskFromString (String taskString) {
+        String[] splitString = taskString.split(",");
+        Status newStatus = null;
+        switch (splitString[2]) {
+            case "NEW":
+                newStatus = Status.NEW;
+                break;
+            case "IN_PROGRESS":
+                newStatus = Status.IN_PROGRESS;
+                break;
+            case "DONE":
+                newStatus = Status.DONE;
+                break;
+        }
+        Task newTask = new Task(splitString[1],splitString[3], newStatus);
+        newTask.setId(Integer.parseInt(splitString[0]));
+
+        return newTask;
+    }
 }
 
