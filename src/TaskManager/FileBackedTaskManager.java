@@ -7,11 +7,12 @@ import tasks.Task;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
     private static File fileName;
-    private static final String header = "id,type,name,status,description,epic";
+    private static final String HEADER = "id,type,name,status,description,epic";
 
     public FileBackedTaskManager(File fileName) {
         this.fileName = fileName;
@@ -25,13 +26,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
         try (FileWriter writer = new FileWriter(fileName, StandardCharsets.UTF_8, false)) {
 
+            if (fileName == null) {
+                throw new ManagerSaveException("Не указан файл");
+            }
+
             /*Для сохранения получаем все имеющиеся в InMemoryTaskManager задачи, эпики и подзадачи*/
             taskListToOut = getAllTasks();
             epicListToOut = getAllEpic();
             subtaskListToOut = getAllSubtask();
 
+            if (taskListToOut.isEmpty() && epicListToOut.isEmpty() && subtaskListToOut.isEmpty()) {
+                throw new ManagerSaveException("Задачи в менеджере отсутствуют.");
+            }
+
             /*Записываем заголовок в файл и переносим все элементы*/
-            writer.write(header + "\n");
+            writer.write(HEADER + "\n");
             for (Task task : taskListToOut) {
                 writer.write(task.toString() + "\n");
             }
@@ -42,12 +51,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 writer.write(subtask.toString() + "\n");
             }
 
-            /*Записываем ключ в файл*/
-            Integer currentId = getCurrentId();
-            writer.write("key," + currentId.toString());
-
-        } catch (ManagerSaveException e) {
-            System.out.println(e.getMessage());
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -58,10 +61,29 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         FileBackedTaskManager backedTaskManager = new FileBackedTaskManager(fileForLoad);
         String[] inputString;
         String stringToMerge;
+        List<Integer> idList = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName, StandardCharsets.UTF_8))) {
             while (reader.ready()) {
                 inputString = reader.readLine().split(",");
+
+                //проверка строки на заголовок с целью ее пропуска:
+                boolean check = Arrays.equals(inputString, HEADER.split(","));
+
+                try {
+                    if (check) {
+                        continue;
+                    } else if (Integer.parseInt(inputString[0]) > 0) {
+                        if (idList.contains(Integer.parseInt(inputString[0]))) {
+                            throw new ManagerSaveException("Попытка добавления имеющегося ID");
+                        } else if (Integer.parseInt(inputString[0]) == 0 && Integer.parseInt(inputString[0]) <= 0) {
+                            throw new ManagerSaveException("Некорректный ID");
+                        }
+                        idList.add(Integer.parseInt(inputString[0]));
+                    }
+                } catch (ManagerSaveException e) {
+                    System.out.println(e.getMessage());
+                }
                 switch (inputString[1]) {
 
                     /*В зависимости от типа задачи собираем строки из файла в определенный класс*/
@@ -83,14 +105,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                         backedTaskManager.addSubtask(Subtask.subtaskFromString(stringToMerge));
                         break;
                 }
-                /*Определяем ключ для дальнейшей работы*/
-                if (inputString[0].equals("key")) {
-                    Integer setNewId = Integer.parseInt(inputString[1]);
-                    backedTaskManager.setNextId(setNewId);
-                }
+
             }
+
+            /*Определяем ключ для дальнейшей работы*/
+            backedTaskManager.generateNextId();
+
         } catch (IOException e) {
             System.out.println(e.getMessage());
+            return null;
+        } catch (NumberFormatException exception) {
+            System.out.println("Начало строки содержит некорректное значение id");
+            return null;
         }
 
         return backedTaskManager;
@@ -102,13 +128,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     @Override
-    public int getCurrentId() {
-        return super.getCurrentId();
-    }
-
-    @Override
-    public int setNextId(int id) {
-        return super.setNextId(id);
+    public int generateNextId() {
+        return super.generateNextId();
     }
 
     @Override
@@ -206,5 +227,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         return super.getAllEpic();
     }
 
+    private int getNextIdFormBackup(List<Integer> idList) {
+        int nextId = 0;
+        for (Integer id : idList) {
+            if (id > nextId) {
+                nextId = id;
+            }
+        }
+
+        return ++nextId;
+    }
 
 }

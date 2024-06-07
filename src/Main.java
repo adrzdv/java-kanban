@@ -18,7 +18,7 @@ public class Main {
         Subtask subtaskTwo = new Subtask("Subtask 2", "Subtask2 description", NEW, 1);
         Task taskOne = new Task("Task1", "Task1 description", NEW);
 
-        File fileForBackup = new File("c:\\dev\\java-kanban\\src\\file.txt");
+        File fileForBackup = new File("c:\\dev\\java-kanban\\file.txt");
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(fileForBackup);
 
 

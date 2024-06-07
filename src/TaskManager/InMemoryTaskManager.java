@@ -208,14 +208,27 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     /*Добавим метод, задающий значение ключа для бэкапа*/
-    public int setNextId(int id) {
-        return this.id = id;
-    }
 
-    /*Добавим метод, задающий текущее значение свободного
-    ключа на момент выхода из программы*/
-    public int getCurrentId() {
-        return this.id;
+    public int generateNextId() {
+        int nextId = 0;
+        List<Integer> idList = new ArrayList<>();
+        for (Task task : taskList.values()) {
+            idList.add(task.getId());
+        }
+        for (Epic epic : epicList.values()) {
+            idList.add(epic.getId());
+        }
+        for (Subtask subtask : subtaskList.values()) {
+            idList.add(subtask.getId());
+        }
+
+        for (int id : idList) {
+            if (id > nextId) {
+                nextId = id;
+            }
+        }
+
+        return this.id = ++nextId;
     }
 
     private int getID() {
