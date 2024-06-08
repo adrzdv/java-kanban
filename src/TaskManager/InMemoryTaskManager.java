@@ -21,23 +21,43 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void addTask(Task newTask) {
-        int newId = getID();
-        newTask.setId(newId);
+    public void addTask(Task newTask) throws ManagerSaveException {
+
+        int newId;
+
+        if (newTask.getId() == null) {
+            newId = getID();
+            newTask.setId(newId);
+        } else {
+            newId = newTask.getId();
+        }
+
         taskList.put(newId, newTask);
     }
 
     @Override
-    public void addEpic(Epic newEpic) {
-        int newId = getID();
+    public void addEpic(Epic newEpic) throws ManagerSaveException {
+        int newId;
+        if (newEpic.getId() == null) {
+            newId = getID();
+            newEpic.setId(newId);
+        } else {
+            newId = newEpic.getId();
+        }
         newEpic.setId(newId);
         epicList.put(newId, newEpic);
     }
 
     @Override
-    public void addSubtask(Subtask newSubtask) {
-        int newId = getID();
+    public void addSubtask(Subtask newSubtask) throws ManagerSaveException {
+        int newId;
 
+        if (newSubtask.getId() == null) {
+            newId = getID();
+            newSubtask.setId(newId);
+        } else {
+            newId = newSubtask.getId();
+        }
         newSubtask.setId(newId);
         subtaskList.put(newId, newSubtask);
         int epicId = newSubtask.getEpicId();
@@ -56,7 +76,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void delAllTasks() {
+    public void delAllTasks() throws ManagerSaveException {
         taskList.clear();
         subtaskList.clear();
         epicList.clear();
@@ -64,14 +84,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task newTask) {
+    public void updateTask(Task newTask) throws ManagerSaveException {
         if (taskList.containsKey(newTask.getId())) {
             taskList.put(newTask.getId(), newTask);
         }
     }
 
     @Override
-    public void updateSubtask(Subtask newSubtask) {
+    public void updateSubtask(Subtask newSubtask) throws ManagerSaveException {
         if (subtaskList.containsKey(newSubtask.getId())) {
             subtaskList.put(newSubtask.getId(), newSubtask);
             changeEpicStatus(epicList.get(newSubtask.getEpicId()));
@@ -80,7 +100,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateEpic(Epic newEpic) {
+    public void updateEpic(Epic newEpic) throws ManagerSaveException {
         if (epicList.containsKey(newEpic.getId())) {
             Epic epicForReplace = epicList.get(newEpic.getId());
             List<Integer> subtasks = new ArrayList<>(epicForReplace.getSubtaskID());
@@ -91,7 +111,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteSubtaskById(int subtaskId) {
+    public void deleteSubtaskById(int subtaskId) throws ManagerSaveException {
 
         if (subtaskList.containsKey(subtaskId)) {
             Subtask subTask = subtaskList.get(subtaskId);
@@ -104,7 +124,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteEpicById(int epicId) {
+    public void deleteEpicById(int epicId) throws ManagerSaveException {
         if (epicList.containsKey(epicId)) {
             Epic epic = epicList.get(epicId);
             for (Integer keyForDel : epic.getSubtaskID()) {
@@ -120,7 +140,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteTaskById(int taskId) {
+    public void deleteTaskById(int taskId) throws ManagerSaveException {
         taskList.remove(taskId);
         manager.remove(taskId);
     }
@@ -185,6 +205,30 @@ public class InMemoryTaskManager implements TaskManager {
 
         return new ArrayList<>(epicList.values());
 
+    }
+
+    /*Добавим метод, задающий значение ключа для бэкапа*/
+
+    public int generateNextId() {
+        int nextId = 0;
+        List<Integer> idList = new ArrayList<>();
+        for (Task task : taskList.values()) {
+            idList.add(task.getId());
+        }
+        for (Epic epic : epicList.values()) {
+            idList.add(epic.getId());
+        }
+        for (Subtask subtask : subtaskList.values()) {
+            idList.add(subtask.getId());
+        }
+
+        for (int id : idList) {
+            if (id > nextId) {
+                nextId = id;
+            }
+        }
+
+        return this.id = ++nextId;
     }
 
     private int getID() {

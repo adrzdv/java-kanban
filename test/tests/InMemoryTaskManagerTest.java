@@ -1,5 +1,6 @@
 package tests;
 
+import taskmanager.ManagerSaveException;
 import tasks.*;
 import taskmanager.Manager;
 
@@ -31,7 +32,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldChangeEpicStatus() {
+    public void shouldChangeEpicStatus() throws ManagerSaveException {
         Epic epic = new Epic("name", "Description", NEW);
         taskManager.addEpic(epic);
         Subtask subtask = new Subtask("name", "description", NEW, epic.getId());
@@ -42,7 +43,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldSearchById() {
+    public void shouldSearchById() throws ManagerSaveException {
         Task task = new Task("Name", "Description", NEW);
         Epic epic = new Epic("Name", "Description", NEW);
         taskManager.addEpic(epic);
@@ -58,7 +59,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldBeTheSameAfterAdd() {
+    public void shouldBeTheSameAfterAdd() throws ManagerSaveException {
         Task taskForEqual = new Task("Name", "Description", NEW);
         taskManager.addTask(taskForEqual);
         Task task = taskManager.getTaskById(taskForEqual.getId());
@@ -66,7 +67,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void generatedAndSetIdNotConflicting() {
+    public void generatedAndSetIdNotConflicting() throws ManagerSaveException {
         Task task1 = new Task("name", "description", NEW);
         taskManager.addTask(task1);
         Task task2 = new Task("anotherName", "description", NEW);
