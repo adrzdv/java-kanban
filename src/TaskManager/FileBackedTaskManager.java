@@ -61,7 +61,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         FileBackedTaskManager backedTaskManager = new FileBackedTaskManager(fileForLoad);
         String[] inputString;
         String stringToMerge;
-        List<Integer> idList = new ArrayList<>();
+        List<Integer> idList = new ArrayList<>(); //список идентификаторов для проверки дубликатов
 
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName, StandardCharsets.UTF_8))) {
             while (reader.ready()) {
@@ -225,17 +225,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     @Override
     public List<Epic> getAllEpic() {
         return super.getAllEpic();
-    }
-
-    private int getNextIdFormBackup(List<Integer> idList) {
-        int nextId = 0;
-        for (Integer id : idList) {
-            if (id > nextId) {
-                nextId = id;
-            }
-        }
-
-        return ++nextId;
     }
 
 }
