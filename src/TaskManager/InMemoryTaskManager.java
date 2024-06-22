@@ -14,7 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Epic> epicList = new HashMap<>();
     private final Map<Integer, Subtask> subtaskList = new HashMap<>();
     private final HistoryManager manager = Manager.getDefaultHistory();
-    private final LocalDateTime DEFAULT_DATE = LocalDateTime.of(1900, 01, 01, 00, 00);
+    private final static LocalDateTime DEFAULT_DATE = LocalDateTime.of(1900, 01, 01, 00, 00);
     private Set<Task> sortedTaskSet = getTasksAsPriority();
 
     @Override
