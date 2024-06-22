@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class Main {
     private static InMemoryTaskManager taskManager = new InMemoryTaskManager();
-    final static File fileForBackup = new File("c:\\dev\\java-kanban\\file.txt");
+    private final static File fileForBackup = new File("c:\\dev\\java-kanban\\file.txt");
     private static FileBackedTaskManager fileManager = new FileBackedTaskManager(fileForBackup);
 
 
