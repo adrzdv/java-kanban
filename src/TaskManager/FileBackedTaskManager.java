@@ -9,10 +9,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
     private static File fileName;
-    private static final String HEADER = "id,type,name,status,description,epic";
+    private static final String HEADER = "id,type,name,status,description,epic,start,duration,end";
 
     public FileBackedTaskManager(File fileName) {
         this.fileName = fileName;
@@ -73,14 +74,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 try {
                     if (check) {
                         continue;
-                    } else if (Integer.parseInt(inputString[0]) > 0) {
-                        if (idList.contains(Integer.parseInt(inputString[0]))) {
-                            throw new ManagerSaveException("Попытка добавления имеющегося ID");
-                        } else if (Integer.parseInt(inputString[0]) == 0 && Integer.parseInt(inputString[0]) <= 0) {
-                            throw new ManagerSaveException("Некорректный ID");
-                        }
-                        idList.add(Integer.parseInt(inputString[0]));
+                    } else if (idList.contains(Integer.parseInt(inputString[0]))) {
+                        throw new ManagerSaveException("Попытка добавления имеющегося ID");
+                    } else if (Integer.parseInt(inputString[0]) <= 0) {
+                        throw new ManagerSaveException("Некорректный ID");
                     }
+                    idList.add(Integer.parseInt(inputString[0]));
+
                 } catch (ManagerSaveException e) {
                     System.out.println(e.getMessage());
                 }
@@ -89,32 +89,37 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                     /*В зависимости от типа задачи собираем строки из файла в определенный класс*/
                     case "TASK":
                         stringToMerge = String.join(",", inputString[0], inputString[2], inputString[3],
-                                inputString[4]);
+                                inputString[4], inputString[6], inputString[7]);
                         backedTaskManager.addTask(Task.taskFromString(stringToMerge));
                         break;
 
                     case "EPIC":
                         stringToMerge = String.join(",", inputString[0], inputString[2], inputString[3],
-                                inputString[4]);
+                                inputString[4], inputString[6], inputString[7], inputString[8]);
                         backedTaskManager.addEpic(Epic.epicFromString(stringToMerge));
                         break;
 
                     case "SUBTASK":
                         stringToMerge = String.join(",", inputString[0], inputString[2], inputString[3],
-                                inputString[4], inputString[5]);
+                                inputString[4], inputString[5], inputString[6], inputString[7]);
                         backedTaskManager.addSubtask(Subtask.subtaskFromString(stringToMerge));
                         break;
                 }
 
             }
 
-            /*Определяем ключ для дальнейшей работы*/
+            //Определяем ключ для дальнейшей работы
+            //Восстанавливаем отсортированный по времени список задач
             backedTaskManager.generateNextId();
+            backedTaskManager.getTasksAsPriority();
 
-        } catch (IOException e) {
+
+        } catch (
+                IOException e) {
             System.out.println(e.getMessage());
             return null;
-        } catch (NumberFormatException exception) {
+        } catch (
+                NumberFormatException exception) {
             System.out.println("Начало строки содержит некорректное значение id");
             return null;
         }
@@ -225,6 +230,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     @Override
     public List<Epic> getAllEpic() {
         return super.getAllEpic();
+    }
+
+    @Override
+    public Set<Task> getTasksAsPriority() {
+        return super.getTasksAsPriority();
     }
 
 }

@@ -2,6 +2,8 @@ package tasks;
 
 import taskmanager.TaskType;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
@@ -10,15 +12,52 @@ public class Task {
     protected String descriptionTask;
     protected Status statusTask;
     protected Integer taskId;
+    protected Duration duration;        //будем хранить в минутах
+    protected LocalDateTime startTime;
 
 
-    public Task(String newNameTask, String newDescriptionTask, Status newStatus) {
-        this.nameTask = newNameTask;
-        this.descriptionTask = newDescriptionTask;
-        this.statusTask = newStatus;
+    public Task(String nameTask, String descriptionTask, Status statusTask) {
+        this.nameTask = nameTask;
+        this.descriptionTask = descriptionTask;
+        this.statusTask = statusTask;
+        this.startTime = LocalDateTime.of(1900, 01, 01, 00, 00);
+        this.duration = Duration.ofMinutes(0);
+    }
+
+    public Task(String nameTask,
+                String descriptionTask,
+                Status statusTask,
+                LocalDateTime startTime,
+                Duration duration) {
+        this.nameTask = nameTask;
+        this.descriptionTask = descriptionTask;
+        this.statusTask = statusTask;
+        this.startTime = startTime;
+        this.duration = duration;
 
     }
 
+    public void setDuration(Long minutesDuration) {
+        this.duration = Duration.ofMinutes(minutesDuration);
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        LocalDateTime endTime = startTime.plus(duration);
+        return endTime;
+    }
+
+    public Duration getDuration() {
+        return this.duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return this.startTime;
+    }
 
     public Status getStatusTask() {
         return statusTask;
@@ -74,7 +113,8 @@ public class Task {
 
     @Override
     public String toString() {
-        return taskId + "," + TaskType.TASK + "," + nameTask + "," + statusTask + "," + descriptionTask;
+        return taskId + "," + TaskType.TASK + "," + nameTask + "," + statusTask + "," + descriptionTask + ", ,"
+                + startTime + "," + duration.toMinutes();
     }
 
     public static Task taskFromString(String taskString) {
@@ -91,7 +131,11 @@ public class Task {
                 newStatus = Status.DONE;
                 break;
         }
-        Task newTask = new Task(splitString[1], splitString[3], newStatus);
+        Task newTask = new Task(splitString[1],
+                splitString[3],
+                newStatus,
+                LocalDateTime.parse(splitString[4]),
+                Duration.ofMinutes(Long.parseLong(splitString[5])));
         newTask.setId(Integer.parseInt(splitString[0]));
 
         return newTask;

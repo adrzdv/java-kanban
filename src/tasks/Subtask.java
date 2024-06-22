@@ -2,15 +2,29 @@ package tasks;
 
 import taskmanager.TaskType;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 
 public class Subtask extends Task {
     protected int epicId;
 
-    public Subtask(String newNameTask, String newDescriptionTask, Status newStatus, int newEpicId) {
-        super(newNameTask, newDescriptionTask, newStatus);
-        this.epicId = newEpicId;
+    public Subtask(String nameTask, String descriptionTask, Status statusTask, int epicId) {
+        super(nameTask, descriptionTask, statusTask);
+        this.epicId = epicId;
 
     }
+
+    public Subtask(String nameTask,
+                   String descriptionTask,
+                   Status statusTask,
+                   int epicId,
+                   LocalDateTime startTime,
+                   Duration duration) {
+        super(nameTask, descriptionTask, statusTask, startTime, duration);
+        this.epicId = epicId;
+    }
+
 
     public int getEpicId() {
 
@@ -24,7 +38,8 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return taskId + "," + TaskType.SUBTASK + "," + nameTask + "," + statusTask + "," + descriptionTask + "," + epicId;
+        return taskId + "," + TaskType.SUBTASK + "," + nameTask + "," + statusTask + "," + descriptionTask + ","
+                + epicId + "," + startTime + "," + duration.toMinutes();
     }
 
     public static Subtask subtaskFromString(String subtaskString) {
@@ -41,7 +56,12 @@ public class Subtask extends Task {
                 newStatus = Status.DONE;
                 break;
         }
-        Subtask newSubtask = new Subtask(splitString[1], splitString[3], newStatus, Integer.parseInt(splitString[4]));
+        Subtask newSubtask = new Subtask(splitString[1],
+                splitString[3],
+                newStatus,
+                Integer.parseInt(splitString[4]),
+                LocalDateTime.parse(splitString[5]),
+                Duration.ofMinutes(Long.parseLong(splitString[6])));
         newSubtask.setId(Integer.parseInt(splitString[0]));
 
         return newSubtask;
