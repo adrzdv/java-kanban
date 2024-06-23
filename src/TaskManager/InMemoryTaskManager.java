@@ -5,17 +5,20 @@ import tasks.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
+    private static final LocalDateTime DEFAULT_DATE = LocalDateTime.of(1900, 01, 01, 00, 00);
     private int id = 1;
     private final Map<Integer, Task> taskList = new HashMap<>();
     private final Map<Integer, Epic> epicList = new HashMap<>();
     private final Map<Integer, Subtask> subtaskList = new HashMap<>();
     private final HistoryManager manager = Manager.getDefaultHistory();
-    private static final LocalDateTime DEFAULT_DATE = LocalDateTime.of(1900, 01, 01, 00, 00);
+
     private Set<Task> sortedTaskSet = getTasksAsPriority();
+
 
     @Override
     public List<Task> getHistory() {
@@ -99,7 +102,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         if (taskList.containsKey(newTask.getId()) && !checkDateInterval(newTask)) {
             taskList.put(newTask.getId(), newTask);
-            getTasksAsPriority();
+            setSortedTaskSet(getTasksAsPriority());
         }
 
     }
@@ -113,7 +116,7 @@ public class InMemoryTaskManager implements TaskManager {
             setEpicDuration(epicList.get(newSubtask.getEpicId()));
             setEpicStartTime(epicList.get(newSubtask.getEpicId()));
             setEpicEndTime(epicList.get(newSubtask.getEpicId()));
-            getTasksAsPriority();
+            setSortedTaskSet(getTasksAsPriority());
         }
     }
 
@@ -171,20 +174,34 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTaskById(int taskId) {
-
-        Task task = taskList.get(taskId);
-        manager.add(task);
-
-        return task;
+        try {
+            Optional<Task> task = Optional.ofNullable(taskList.get(taskId));
+            if (task.isEmpty()) {
+                throw new TaskManagerException("Task not found");
+            } else {
+                manager.add(task.get());
+                return task.get();
+            }
+        } catch (TaskManagerException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 
     @Override
     public Subtask getSubtaskById(int taskId) {
-
-        Subtask subtask = subtaskList.get(taskId);
-        manager.add(subtask);
-
-        return subtask;
+        try {
+            Optional<Subtask> subtask = Optional.ofNullable(subtaskList.get(taskId));
+            if (subtask.isEmpty()) {
+                throw new TaskManagerException("Subtask not found");
+            } else {
+                manager.add(subtask.get());
+                return subtask.get();
+            }
+        } catch (TaskManagerException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 
     @Override
@@ -251,18 +268,23 @@ public class InMemoryTaskManager implements TaskManager {
     //Получаем отсортированный по времени список задач
     @Override
     public Set<Task> getTasksAsPriority() {
-        Set<Task> treeSetTask = new TreeSet<>(Comparator.comparing(task -> task.getStartTime()));
+        Set<Task> treeSetTask = new TreeSet<>(Comparator.comparing(Task::getStartTime));
         taskList.values().stream()
                 .filter(task -> !task.getStartTime().equals(DEFAULT_DATE))
-                .peek(task -> treeSetTask.add(task))
+                .peek(treeSetTask::add)
                 .collect(Collectors.toSet());
         subtaskList.values().stream()
                 .filter(subtask -> !subtask.getStartTime().equals(DEFAULT_DATE))
-                .peek(subtask -> treeSetTask.add(subtask))
+                .peek(treeSetTask::add)
                 .collect(Collectors.toSet());
 
-        return this.sortedTaskSet = treeSetTask;
+        return treeSetTask;
 
+    }
+
+    @Override
+    public void setSortedTaskSet(Set<Task> sortedTaskSet) {
+        this.sortedTaskSet = sortedTaskSet;
     }
 
     private int getID() {
@@ -295,40 +317,51 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     /*Рассчитываем длительность выполнения задачи на основании длительности подзадач*/
-    private Duration setEpicDuration(Epic epic) {
-        Duration epicDuration = Duration.ofMinutes(0L);
-        if (epic.getSubtaskID() != null) {
-            for (int subID : epic.getSubtaskID()) {
-                Subtask subtask = subtaskList.get(subID);
-                epicDuration = epicDuration.plusMinutes(subtask.getDuration().toMinutes());
-            }
-        }
-        return epic.setEpicDuration(epicDuration);
+    private void setEpicDuration(Epic epic) {
+
+        epic.setEpicDuration(getAllSubtask().stream()
+                .filter(subtask -> subtask.getEpicId() == epic.getId())
+                .map(Task::getDuration)
+                .reduce(Duration.of(0, ChronoUnit.MINUTES), Duration::plus));
     }
 
     //Задаем эпику начальное время
     private void setEpicStartTime(Epic epic) {
-        Subtask subtask = getSubtaskWithEarlyTime(epic).get();
-        epic.setStartTime(subtask.getStartTime());
+        try {
+            if (getSubtaskWithEarlyTime(epic).isPresent()) {
+                epic.setStartTime(getSubtaskWithEarlyTime(epic).get().getStartTime());
+            } else {
+                throw new TaskManagerException("Subtask not found");
+            }
+        } catch (TaskManagerException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     //Тут ищем эпик с самым ранним временем выполнения
     private Optional<Subtask> getSubtaskWithEarlyTime(Epic epic) {
         return epic.getSubtaskID().stream()
-                .map(subtask -> subtaskList.get(subtask))
+                .map(subtaskList::get)
                 .min(Comparator.comparing(Task::getStartTime));
     }
 
     //Задаем эпику конечное время выполнения
     private void setEpicEndTime(Epic epic) {
-        Subtask subtask = getSubtaskWithLaterTime(epic).get();
-        epic.setEndTime(subtask.getEndTime());
+        try {
+            if (getSubtaskWithLaterTime(epic).isPresent()) {
+                epic.setEndTime((getSubtaskWithLaterTime(epic).get().getEndTime()));
+            } else {
+                throw new TaskManagerException("Subtask not found");
+            }
+        } catch (TaskManagerException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     //Получаем сабтаск с самым последним временем выполнения
     private Optional<Subtask> getSubtaskWithLaterTime(Epic epic) {
         return epic.getSubtaskID().stream()
-                .map(subtask -> subtaskList.get(subtask))
+                .map(subtaskList::get)
                 .max(Comparator.comparing(Task::getStartTime));
     }
 
@@ -337,7 +370,7 @@ public class InMemoryTaskManager implements TaskManager {
         LocalDateTime startTaskTime = task.getStartTime();
         Duration durationTask = task.getDuration();
         LocalDateTime endTaskTime = startTaskTime.plus(durationTask);
-        getTasksAsPriority();
+        setSortedTaskSet(getTasksAsPriority());
 
         Optional<Boolean> result = sortedTaskSet.stream()
                 .map(sortedTaskSet -> {

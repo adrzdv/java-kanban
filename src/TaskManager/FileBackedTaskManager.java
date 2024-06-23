@@ -19,7 +19,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         this.fileName = fileName;
     }
 
-    public void save() throws ManagerSaveException {
+    public void save() {
 
         List<Task> taskListToOut = new ArrayList<>();
         List<Epic> epicListToOut = new ArrayList<>();
@@ -28,7 +28,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try (FileWriter writer = new FileWriter(fileName, StandardCharsets.UTF_8, false)) {
 
             if (fileName == null) {
-                throw new ManagerSaveException("Не указан файл");
+                throw new ManagerSaveException("Set a filename");
             }
 
             /*Для сохранения получаем все имеющиеся в InMemoryTaskManager задачи, эпики и подзадачи*/
@@ -37,7 +37,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             subtaskListToOut = getAllSubtask();
 
             if (taskListToOut.isEmpty() && epicListToOut.isEmpty() && subtaskListToOut.isEmpty()) {
-                throw new ManagerSaveException("Задачи в менеджере отсутствуют.");
+                throw new ManagerSaveException("There're no tasks/subtasks/epic in Manager");
             }
 
             /*Записываем заголовок в файл и переносим все элементы*/
@@ -57,7 +57,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         }
     }
 
-    public static FileBackedTaskManager loadFromFile(File fileForLoad) throws IOException {
+    public static FileBackedTaskManager loadFromFile(File fileForLoad) {
 
         FileBackedTaskManager backedTaskManager = new FileBackedTaskManager(fileForLoad);
         String[] inputString;
@@ -74,54 +74,51 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 try {
                     if (check) {
                         continue;
-                    } else if (idList.contains(Integer.parseInt(inputString[0]))) {
-                        throw new ManagerSaveException("Попытка добавления имеющегося ID");
                     } else if (Integer.parseInt(inputString[0]) <= 0) {
-                        throw new ManagerSaveException("Некорректный ID");
+                        throw new ManagerSaveException("Incorrect ID. Task id/type/name: " + inputString[0] +
+                                "/" + inputString[1] + "/" + inputString[2]);
+                    } else if (idList.contains(Integer.parseInt(inputString[0]))) {
+                        throw new ManagerSaveException("Duplicated ID. Task id/type/name: " + inputString[0] +
+                                "/" + inputString[1] + "/" + inputString[2]);
                     }
                     idList.add(Integer.parseInt(inputString[0]));
+                    switch (inputString[1]) {
+
+                        /*В зависимости от типа задачи собираем строки из файла в определенный класс*/
+                        case "TASK":
+                            stringToMerge = String.join(",", inputString[0], inputString[2], inputString[3],
+                                    inputString[4], inputString[6], inputString[7]);
+                            backedTaskManager.addTask(Task.taskFromString(stringToMerge));
+                            break;
+
+                        case "EPIC":
+                            stringToMerge = String.join(",", inputString[0], inputString[2], inputString[3],
+                                    inputString[4], inputString[6], inputString[7], inputString[8]);
+                            backedTaskManager.addEpic(Epic.epicFromString(stringToMerge));
+                            break;
+
+                        case "SUBTASK":
+                            stringToMerge = String.join(",", inputString[0], inputString[2], inputString[3],
+                                    inputString[4], inputString[5], inputString[6], inputString[7]);
+                            backedTaskManager.addSubtask(Subtask.subtaskFromString(stringToMerge));
+                            break;
+                    }
+                    //Определяем ключ для дальнейшей работы
+                    //Восстанавливаем отсортированный по времени список задач
+                    backedTaskManager.generateNextId();
+                    Set<Task> prioritizedTaskSet = backedTaskManager.getTasksAsPriority();
+                    backedTaskManager.setSortedTaskSet(prioritizedTaskSet);
+
 
                 } catch (ManagerSaveException e) {
                     System.out.println(e.getMessage());
-                }
-                switch (inputString[1]) {
-
-                    /*В зависимости от типа задачи собираем строки из файла в определенный класс*/
-                    case "TASK":
-                        stringToMerge = String.join(",", inputString[0], inputString[2], inputString[3],
-                                inputString[4], inputString[6], inputString[7]);
-                        backedTaskManager.addTask(Task.taskFromString(stringToMerge));
-                        break;
-
-                    case "EPIC":
-                        stringToMerge = String.join(",", inputString[0], inputString[2], inputString[3],
-                                inputString[4], inputString[6], inputString[7], inputString[8]);
-                        backedTaskManager.addEpic(Epic.epicFromString(stringToMerge));
-                        break;
-
-                    case "SUBTASK":
-                        stringToMerge = String.join(",", inputString[0], inputString[2], inputString[3],
-                                inputString[4], inputString[5], inputString[6], inputString[7]);
-                        backedTaskManager.addSubtask(Subtask.subtaskFromString(stringToMerge));
-                        break;
+                } catch (NumberFormatException exception) {
+                    System.out.println("Start of string contains incorrect id value. Recovering interrupted.");
                 }
 
             }
-
-            //Определяем ключ для дальнейшей работы
-            //Восстанавливаем отсортированный по времени список задач
-            backedTaskManager.generateNextId();
-            backedTaskManager.getTasksAsPriority();
-
-
-        } catch (
-                IOException e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
-            return null;
-        } catch (
-                NumberFormatException exception) {
-            System.out.println("Начало строки содержит некорректное значение id");
-            return null;
         }
 
         return backedTaskManager;
@@ -235,6 +232,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     @Override
     public Set<Task> getTasksAsPriority() {
         return super.getTasksAsPriority();
+    }
+
+    @Override
+    public void setSortedTaskSet(Set<Task> sortedTaskSet) {
+        super.setSortedTaskSet(sortedTaskSet);
     }
 
 }

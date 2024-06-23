@@ -45,4 +45,6 @@ public interface TaskManager {
 
     public Set<Task> getTasksAsPriority();
 
+    public void setSortedTaskSet(Set<Task> setTask);
+
 }
