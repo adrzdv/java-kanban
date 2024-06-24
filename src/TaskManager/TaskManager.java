@@ -3,6 +3,7 @@ package taskmanager;
 import tasks.*;
 
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
 
@@ -41,5 +42,9 @@ public interface TaskManager {
     List<Subtask> getAllSubtask();
 
     List<Epic> getAllEpic();
+
+    public Set<Task> getTasksAsPriority();
+
+    public void setSortedTaskSet(Set<Task> setTask);
 
 }
