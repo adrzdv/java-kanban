@@ -29,6 +29,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void addTask(Task newTask) throws ManagerSaveException {
 
         int newId;
+        int answer = 0;
 
         if (!checkDateInterval(newTask)) {
             if (newTask.getId() == null) {
@@ -287,6 +288,31 @@ public class InMemoryTaskManager implements TaskManager {
         this.sortedTaskSet = sortedTaskSet;
     }
 
+    //Проверяем пересечение временных отрезков
+    @Override
+    public boolean checkDateInterval(Task task) {
+        LocalDateTime startTaskTime = task.getStartTime();
+        Duration durationTask = task.getDuration();
+        LocalDateTime endTaskTime = startTaskTime.plus(durationTask);
+        setSortedTaskSet(getTasksAsPriority());
+
+        Optional<Boolean> result = sortedTaskSet.stream()
+                .map(sortedTaskSet -> {
+                    if (Duration.between(sortedTaskSet.getStartTime(), startTaskTime).toMinutes() < 0 &&
+                            Duration.between(sortedTaskSet.getStartTime(), endTaskTime).toMinutes() > 0) {
+                        return true;
+                    } else if (Duration.between(sortedTaskSet.getStartTime(), startTaskTime).toMinutes() > 0 &&
+                            Duration.between(sortedTaskSet.getStartTime().plus(sortedTaskSet.getDuration()), startTaskTime).toMinutes() < 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                })
+                .findFirst();
+
+        return result.orElse(false);
+    }
+
     private int getID() {
 
         return id++;
@@ -363,28 +389,6 @@ public class InMemoryTaskManager implements TaskManager {
         return epic.getSubtaskID().stream()
                 .map(subtaskList::get)
                 .max(Comparator.comparing(Task::getStartTime));
-    }
-
-    //Проверяем пересечение временных отрезков
-    private boolean checkDateInterval(Task task) {
-        LocalDateTime startTaskTime = task.getStartTime();
-        Duration durationTask = task.getDuration();
-        LocalDateTime endTaskTime = startTaskTime.plus(durationTask);
-        setSortedTaskSet(getTasksAsPriority());
-
-        Optional<Boolean> result = sortedTaskSet.stream()
-                .map(sortedTaskSet -> {
-                    if (Duration.between(sortedTaskSet.getStartTime(), endTaskTime).toMinutes() < 0 ||
-                            Duration.between(sortedTaskSet.getStartTime().plus(sortedTaskSet.getDuration()),
-                                    startTaskTime).toMinutes() < 0) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                })
-                .findFirst();
-
-        return result.orElse(false);
     }
 
 }
