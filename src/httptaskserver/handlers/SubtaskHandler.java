@@ -73,7 +73,7 @@ public class SubtaskHandler extends HandlerBase implements HttpHandler {
 
     private void postSubtaskHandler(HttpExchange exchange, Gson gson, String body) throws IOException {
         Subtask subtask = gson.fromJson(body, new SubtaskTypeToken().getType());
-        if (!getTaskManager().checkDateInterval(subtask)) {
+        if (getTaskManager().checkDateInterval(subtask)) {
             getTaskManager().addSubtask(subtask);
             sendOverlap(exchange);
         } else {
