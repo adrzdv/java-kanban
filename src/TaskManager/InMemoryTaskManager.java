@@ -29,7 +29,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void addTask(Task newTask) throws ManagerSaveException {
 
         int newId;
-        int answer = 0;
 
         if (!checkDateInterval(newTask)) {
             if (newTask.getId() == null) {

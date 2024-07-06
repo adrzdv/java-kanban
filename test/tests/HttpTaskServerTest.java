@@ -3,6 +3,7 @@ package tests;
 import com.google.gson.Gson;
 import httptaskserver.HttpTaskServer;
 import httptaskserver.typetoken.EpicListTypeToken;
+import httptaskserver.typetoken.SetTaskTypeToken;
 import httptaskserver.typetoken.SubtaskListTypeToken;
 import httptaskserver.typetoken.TaskListTypeToken;
 import org.junit.jupiter.api.AfterEach;
@@ -22,6 +23,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -177,7 +179,7 @@ class HttpTaskServerTest {
                 NEW,
                 LocalDateTime.of(2024, 01, 01, 12, 00),
                 Duration.ofMinutes(15L),
-                LocalDateTime.of(2024,01,01,12,15));
+                LocalDateTime.of(2024, 01, 01, 12, 15));
         epic.setId(1);
 
         TaskManager manager = server.getTaskManager();
@@ -237,8 +239,65 @@ class HttpTaskServerTest {
     }
 
     @Test
-    void deleteTasks() {
+    void getHistory() throws IOException, InterruptedException {
+        Task task = new Task("test",
+                "description",
+                NEW,
+                LocalDateTime.now(),
+                Duration.ofMinutes(25L));
 
+        TaskManager manager = server.getTaskManager();
+        Gson gson = server.getGson();
+        manager.addTask(task);
+        manager.getTaskById(1);
+
+        String taskJson = gson.toJson(task);
+
+        HttpClient client = HttpClient.newHttpClient();
+        URI uriTask = URI.create("http://localhost:8080/history");
+        HttpRequest requestTask = HttpRequest.newBuilder()
+                .uri(uriTask)
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(requestTask, HttpResponse.BodyHandlers.ofString());
+        List<Task> history = manager.getHistory();
+        List<Task> jsonResponse = gson.fromJson(response.body(), new TaskListTypeToken().getType());
+        assertEquals(200, response.statusCode());
+        assertEquals(history, jsonResponse);
+        client.close();
+    }
+
+    @Test
+    void getPrioritized() throws IOException, InterruptedException {
+        Task task = new Task("test",
+                "description",
+                NEW,
+                LocalDateTime.of(2024, 01, 01, 12, 00),
+                Duration.ofMinutes(15L));
+        Task taskTwo = new Task("sub",
+                "description",
+                NEW,
+                LocalDateTime.of(2024, 01, 02, 12, 10),
+                Duration.ofMinutes(15L));
+
+        TaskManager manager = server.getTaskManager();
+        Gson gson = server.getGson();
+        manager.addTask(task);
+        manager.addTask(taskTwo);
+
+        HttpClient client = HttpClient.newHttpClient();
+        URI uriTask = URI.create("http://localhost:8080/prioritized");
+        HttpRequest requestTask = HttpRequest.newBuilder()
+                .uri(uriTask)
+                .GET()
+                .build();
+
+        HttpResponse<String> responseTask = client.send(requestTask, HttpResponse.BodyHandlers.ofString());
+        Set<Task> treeManager = manager.getTasksAsPriority();
+        Set<Task> treeGson = gson.fromJson(responseTask.body(), new SetTaskTypeToken().getType());
+        assertEquals(treeManager, treeGson);
+        client.close();
     }
 
     @AfterEach
