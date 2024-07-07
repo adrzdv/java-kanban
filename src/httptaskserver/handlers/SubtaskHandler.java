@@ -24,6 +24,9 @@ public class SubtaskHandler extends HandlerBase implements HttpHandler {
             String path = exchange.getRequestURI().getPath();
             String method = exchange.getRequestMethod();
 
+            //Вызываем соответствующие методы в зависимости от метода запроса
+            //В каждом случае парсим строку и в зависимости от итога вызываем требуемый метод
+
             switch (method) {
                 case "GET":
                     if (Pattern.matches("^/subtasks$", path)) {
@@ -71,9 +74,10 @@ public class SubtaskHandler extends HandlerBase implements HttpHandler {
         }
     }
 
+    //Метод для добавления подазачи в менеджер
     private void postSubtaskHandler(HttpExchange exchange, Gson gson, String body) throws IOException {
         Subtask subtask = gson.fromJson(body, new SubtaskTypeToken().getType());
-        if (getTaskManager().checkDateInterval(subtask)) {
+        if (!getTaskManager().checkDateInterval(subtask)) {
             getTaskManager().addSubtask(subtask);
             sendOverlap(exchange);
         } else {
@@ -82,6 +86,7 @@ public class SubtaskHandler extends HandlerBase implements HttpHandler {
         }
     }
 
+    //Метод для удаления подзадачи из менеджера
     private void deleteSubtaskHandler(HttpExchange exchange, String path) throws IOException {
         int idSubtask = getIdFromPath(path.replaceFirst("/subtasks/", ""));
         if (idSubtask != -1) {
@@ -92,6 +97,7 @@ public class SubtaskHandler extends HandlerBase implements HttpHandler {
         }
     }
 
+    //Метод для удаление всех подзадач
     private void getAllSubtasksHandler(HttpExchange exchange, Gson gson) throws IOException {
         List<Subtask> subtaskList = getTaskManager().getAllSubtask();
         if (!subtaskList.isEmpty()) {
@@ -102,6 +108,7 @@ public class SubtaskHandler extends HandlerBase implements HttpHandler {
         }
     }
 
+    //Метод для получения подзадачи по идентификатору
     private void getSubtaskByIdHandler(HttpExchange exchange, Gson gson, String path) throws IOException {
         int idSubtask = getIdFromPath(path.replaceFirst("/subtasks/", ""));
         if (idSubtask != -1) {

@@ -30,7 +30,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         int newId;
 
-        if (!checkDateInterval(newTask)) {
+        if (checkDateInterval(newTask)) {
             if (newTask.getId() == null) {
                 newId = getID();
                 newTask.setId(newId);
@@ -62,7 +62,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         int newId;
 
-        if (!checkDateInterval(newSubtask)) {
+        if (checkDateInterval(newSubtask)) {
             if (newSubtask.getId() == null) {
                 newId = getID();
                 newSubtask.setId(newId);
@@ -100,7 +100,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateTask(Task newTask) throws ManagerSaveException {
 
-        if (taskList.containsKey(newTask.getId()) && !checkDateInterval(newTask)) {
+        if (taskList.containsKey(newTask.getId()) && checkDateInterval(newTask)) {
             taskList.put(newTask.getId(), newTask);
             setSortedTaskSet(getTasksAsPriority());
         }
@@ -110,7 +110,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubtask(Subtask newSubtask) throws ManagerSaveException {
 
-        if (subtaskList.containsKey(newSubtask.getId()) && !checkDateInterval(newSubtask)) {
+        if (subtaskList.containsKey(newSubtask.getId()) && checkDateInterval(newSubtask)) {
             subtaskList.put(newSubtask.getId(), newSubtask);
             changeEpicStatus(epicList.get(newSubtask.getEpicId()));
             setEpicDuration(epicList.get(newSubtask.getEpicId()));
@@ -295,8 +295,16 @@ public class InMemoryTaskManager implements TaskManager {
         LocalDateTime endTaskTime = startTaskTime.plus(durationTask);
         setSortedTaskSet(getTasksAsPriority());
 
-        Optional<Boolean> result = sortedTaskSet.stream()
-                .map(sortedTaskSet -> {
+        Optional<Task> result = sortedTaskSet.stream()
+                .filter(sortedTaskSet -> (Duration.between(sortedTaskSet.getStartTime(), startTaskTime).toMinutes() < 0 &&
+                        Duration.between(sortedTaskSet.getStartTime(), endTaskTime).toMinutes() > 0) ||
+                        Duration.between(sortedTaskSet.getStartTime(), startTaskTime).toMinutes() > 0 &&
+                                Duration.between(sortedTaskSet.getStartTime().plus(sortedTaskSet.getDuration()), startTaskTime).toMinutes() < 0)
+                .findAny();
+
+        return result.isEmpty();
+    }
+    /*.map(sortedTaskSet -> {
                     if (Duration.between(sortedTaskSet.getStartTime(), startTaskTime).toMinutes() < 0 &&
                             Duration.between(sortedTaskSet.getStartTime(), endTaskTime).toMinutes() > 0) {
                         return true;
@@ -306,11 +314,7 @@ public class InMemoryTaskManager implements TaskManager {
                     } else {
                         return false;
                     }
-                })
-                .findFirst();
-
-        return result.orElse(false);
-    }
+                })*/ //.findFirst()
 
     private int getID() {
 

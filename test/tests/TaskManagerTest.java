@@ -213,10 +213,10 @@ class TaskManagerTest {
                 Duration.ofMinutes(60L));
 
         taskManager.addTask(task1);
-        assertTrue(taskManager.checkDateInterval(task2));
-        assertTrue(taskManager.checkDateInterval(task3));
-        assertFalse(taskManager.checkDateInterval(task4));
-        assertFalse(taskManager.checkDateInterval(task5));
+        assertFalse(taskManager.checkDateInterval(task2));
+        assertFalse(taskManager.checkDateInterval(task3));
+        assertTrue(taskManager.checkDateInterval(task4));
+        assertTrue(taskManager.checkDateInterval(task5));
 
     }
 

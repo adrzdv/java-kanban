@@ -22,16 +22,20 @@ public class HttpTaskServer {
     private Gson gson;
 
     public HttpTaskServer() throws IOException {
+        //Определяем базовый менеджер задач, в данном случае берем InMemoryTaskManager
         setTaskManager(Manager.getDefault());
-        setGson();
-        server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
-        server.createContext("/tasks", new TaskHandler(taskManager, getGson()));
-        server.createContext("/subtasks", new SubtaskHandler(taskManager, getGson()));
-        server.createContext("/epics", new EpicHandler(taskManager, getGson()));
-        server.createContext("/history", new HistoryHandler(taskManager, getGson()));
-        server.createContext("/prioritized", new PrioritizedHandler(taskManager, getGson()));
-    }
 
+        //Определяем Gson объект для дальнейшей работы
+        this.gson = setGson();
+
+        //Определяем обработчики для каждого пути
+        server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
+        server.createContext("/tasks", new TaskHandler(taskManager, this.gson));
+        server.createContext("/subtasks", new SubtaskHandler(taskManager, this.gson));
+        server.createContext("/epics", new EpicHandler(taskManager, this.gson));
+        server.createContext("/history", new HistoryHandler(taskManager, this.gson));
+        server.createContext("/prioritized", new PrioritizedHandler(taskManager, this.gson));
+    }
 
     public static void main(String[] args) throws IOException {
 
@@ -54,15 +58,12 @@ public class HttpTaskServer {
         this.taskManager = taskManager;
     }
 
-    public void setGson() {
-        this.gson = new GsonBuilder()
+    //Определяем Gson объект, учитываем созданные TypeAdapter для работы с LocalDateTime и Duration
+    public static Gson setGson() {
+        return new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new DateTimeAdapter())
                 .registerTypeAdapter(Duration.class, new DurationAdapter())
                 .create();
-    }
-
-    public Gson getGson() {
-        return this.gson;
     }
 
     public TaskManager getTaskManager() {

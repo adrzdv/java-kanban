@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.regex.Pattern;
 
+
 public class EpicHandler extends HandlerBase implements HttpHandler {
 
     public EpicHandler(TaskManager manager, Gson gson) {
@@ -25,6 +26,8 @@ public class EpicHandler extends HandlerBase implements HttpHandler {
             String path = exchange.getRequestURI().getPath();
             String method = exchange.getRequestMethod();
 
+            //Вызываем соответствующие методы в зависимости от метода запроса
+            //В каждом случае парсим строку и в зависимости от итога вызаываем требуемый метод
             switch (method) {
                 case "GET":
                     if (Pattern.matches("^/epics$", path)) {
@@ -74,12 +77,14 @@ public class EpicHandler extends HandlerBase implements HttpHandler {
         }
     }
 
+    //Метод для добавления эпика
     private void postEpicHandler(HttpExchange exchange, Gson gson, String body) throws IOException {
         Epic epic = gson.fromJson(body, new EpicTypeToken().getType());
         getTaskManager().addEpic(epic);
         sendSuccessRequest(exchange);
     }
 
+    //Метод для получения эпика по идентификатору
     private void getEpicByIdHandler(HttpExchange exchange, Gson gson, String path) throws IOException {
         int idEpic = getIdFromPath(path.replaceFirst("/epics/", ""));
         if (idEpic != -1) {
@@ -95,6 +100,8 @@ public class EpicHandler extends HandlerBase implements HttpHandler {
         }
     }
 
+
+    //Метод для получения всех имеющихся эпиков
     private void getAllEpicsHandler(HttpExchange exchange, Gson gson) throws IOException {
         List<Epic> epicList = getTaskManager().getAllEpic();
         if (!epicList.isEmpty()) {
@@ -105,6 +112,7 @@ public class EpicHandler extends HandlerBase implements HttpHandler {
         }
     }
 
+    //Метод для получения всех подзадач по идентификатору эпика
     private void getEpicSubtasksHandler(HttpExchange exchange, Gson gson, String path) throws IOException {
         int idEpic = getIdFromPath(path);
         Epic epic = getTaskManager().getEpicById(idEpic);
@@ -121,6 +129,8 @@ public class EpicHandler extends HandlerBase implements HttpHandler {
         }
     }
 
+
+    //Метод для удаления эпика
     private void deleteEpicHandler(HttpExchange exchange, String path) throws IOException {
         int idEpic = getIdFromPath(path.replaceFirst("/epics/", ""));
         if (idEpic != -1) {

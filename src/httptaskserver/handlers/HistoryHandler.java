@@ -25,7 +25,7 @@ public class HistoryHandler extends HandlerBase implements HttpHandler {
                 case "GET":
                     getHistoryHandler(exchange, getGson());
                 default:
-                    sendBadRequest(exchange);
+                    sendNotAllowed(exchange);
             }
 
         } catch (Exception e) {
@@ -36,6 +36,7 @@ public class HistoryHandler extends HandlerBase implements HttpHandler {
         }
     }
 
+    //Метод для получения истории просмотров из менеджера задач
     private void getHistoryHandler(HttpExchange exchange, Gson gson) throws IOException {
         List<Task> historyList = getTaskManager().getHistory();
         if (!historyList.isEmpty()) {

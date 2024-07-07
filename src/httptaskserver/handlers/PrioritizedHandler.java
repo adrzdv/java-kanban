@@ -25,7 +25,7 @@ public class PrioritizedHandler extends HandlerBase implements HttpHandler {
                 case "GET":
                     getPrioritizedHandler(exchange, getGson());
                 default:
-                    sendBadRequest(exchange);
+                    sendNotAllowed(exchange);
             }
 
         } catch (Exception e) {
@@ -35,6 +35,7 @@ public class PrioritizedHandler extends HandlerBase implements HttpHandler {
         }
     }
 
+    //Метод для получения отсортированного по времени списка задач
     public void getPrioritizedHandler(HttpExchange exchange, Gson gson) throws IOException {
         Set<Task> prioritizedTaskSet = getTaskManager().getTasksAsPriority();
         if (!prioritizedTaskSet.isEmpty()) {

@@ -54,7 +54,7 @@ class HttpTaskServerTest {
                 Duration.ofMinutes(25L));
 
         TaskManager manager = server.getTaskManager();
-        Gson gson = server.getGson();
+        Gson gson = server.setGson();
 
         String taskJson = gson.toJson(task);
 
@@ -75,7 +75,7 @@ class HttpTaskServerTest {
     }
 
     @Test
-    void checkOverlap() throws IOException, InterruptedException {
+    void shouldOverlap() throws IOException, InterruptedException {
         Task task = new Task("test",
                 "description",
                 NEW,
@@ -86,12 +86,18 @@ class HttpTaskServerTest {
                 NEW,
                 LocalDateTime.of(2024, 01, 01, 12, 10),
                 Duration.ofMinutes(15L));
+        Task taskThree = new Task("three",
+                "description",
+                NEW,
+                LocalDateTime.now(),
+                Duration.ofMinutes(35L));
 
         TaskManager manager = server.getTaskManager();
-        Gson gson = server.getGson();
+        Gson gson = server.setGson();
         manager.addTask(task);
 
         String taskJson = gson.toJson(taskTwo);
+        String taskThreeJson = gson.toJson(taskThree);
 
         HttpClient client = HttpClient.newHttpClient();
         URI uriTask = URI.create("http://localhost:8080/tasks");
@@ -100,8 +106,15 @@ class HttpTaskServerTest {
                 .POST(HttpRequest.BodyPublishers.ofString(taskJson))
                 .build();
 
+        HttpRequest requestThree = HttpRequest.newBuilder()
+                .uri(uriTask)
+                .POST(HttpRequest.BodyPublishers.ofString(taskThreeJson))
+                .build();
+
         HttpResponse<String> responseTask = client.send(requestTask, HttpResponse.BodyHandlers.ofString());
-        assertEquals(406, responseTask.statusCode());
+        assertEquals(406, responseTask.statusCode(), "Not overlapped");
+        HttpResponse<String> responseNext = client.send(requestThree, HttpResponse.BodyHandlers.ofString());
+        assertEquals(201, responseNext.statusCode(), "Overlapped");
         client.close();
 
     }
@@ -122,7 +135,7 @@ class HttpTaskServerTest {
         taskTwo.setId(2);
 
         TaskManager manager = server.getTaskManager();
-        Gson gson = server.getGson();
+        Gson gson = server.setGson();
         manager.addTask(task);
         manager.addTask(taskTwo);
 
@@ -153,7 +166,7 @@ class HttpTaskServerTest {
                 Duration.ofMinutes(25L));
 
         TaskManager manager = server.getTaskManager();
-        Gson gson = server.getGson();
+        Gson gson = server.setGson();
 
         String taskJson = gson.toJson(subtask);
 
@@ -183,7 +196,7 @@ class HttpTaskServerTest {
         epic.setId(1);
 
         TaskManager manager = server.getTaskManager();
-        Gson gson = server.getGson();
+        Gson gson = server.setGson();
         manager.addEpic(epic);
 
         HttpClient client = HttpClient.newHttpClient();
@@ -219,7 +232,7 @@ class HttpTaskServerTest {
         subTwo.setId(3);
 
         TaskManager manager = server.getTaskManager();
-        Gson gson = server.getGson();
+        Gson gson = server.setGson();
         manager.addSubtask(subOne);
         manager.addSubtask(subTwo);
 
@@ -247,7 +260,7 @@ class HttpTaskServerTest {
                 Duration.ofMinutes(25L));
 
         TaskManager manager = server.getTaskManager();
-        Gson gson = server.getGson();
+        Gson gson = server.setGson();
         manager.addTask(task);
         manager.getTaskById(1);
 
@@ -282,7 +295,7 @@ class HttpTaskServerTest {
                 Duration.ofMinutes(15L));
 
         TaskManager manager = server.getTaskManager();
-        Gson gson = server.getGson();
+        Gson gson = server.setGson();
         manager.addTask(task);
         manager.addTask(taskTwo);
 
