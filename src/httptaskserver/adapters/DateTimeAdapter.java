@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 
 public class DateTimeAdapter extends TypeAdapter<LocalDateTime> {
 
-    //Определяем формат вывода даты и времени в ответе на запрос и обратную трансформацию
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd,HH:mm");
 
     @Override

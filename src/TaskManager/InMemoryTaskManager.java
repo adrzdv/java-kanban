@@ -242,7 +242,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     }
 
-    /*Добавим метод, задающий значение ключа для бэкапа*/
+    /**
+     * Метод для генерации ключа при восстановлении данных из файла
+     */
     public int generateNextId() {
         int nextId = 0;
         List<Integer> idList = new ArrayList<>();
@@ -265,7 +267,9 @@ public class InMemoryTaskManager implements TaskManager {
         return this.id = ++nextId;
     }
 
-    //Получаем отсортированный по времени список задач
+    /**
+     * Метод для получения отсортированного списка задач
+     */
     @Override
     public Set<Task> getTasksAsPriority() {
         Set<Task> treeSetTask = new TreeSet<>(Comparator.comparing(Task::getStartTime));
@@ -287,7 +291,9 @@ public class InMemoryTaskManager implements TaskManager {
         this.sortedTaskSet = sortedTaskSet;
     }
 
-    //Проверяем пересечение временных отрезков
+    /**
+     * Метод для проверки на пересечение задач
+     */
     @Override
     public boolean checkDateInterval(Task task) {
         LocalDateTime startTaskTime = task.getStartTime();
@@ -296,31 +302,27 @@ public class InMemoryTaskManager implements TaskManager {
         setSortedTaskSet(getTasksAsPriority());
 
         Optional<Task> result = sortedTaskSet.stream()
-                .filter(sortedTaskSet -> (Duration.between(sortedTaskSet.getStartTime(), startTaskTime).toMinutes() < 0 &&
-                        Duration.between(sortedTaskSet.getStartTime(), endTaskTime).toMinutes() > 0) ||
+                .filter(sortedTaskSet -> (Duration.between(sortedTaskSet.getStartTime(), startTaskTime).toMinutes() < 0
+                        && Duration.between(sortedTaskSet.getStartTime(), endTaskTime).toMinutes() > 0) ||
                         Duration.between(sortedTaskSet.getStartTime(), startTaskTime).toMinutes() > 0 &&
-                                Duration.between(sortedTaskSet.getStartTime().plus(sortedTaskSet.getDuration()), startTaskTime).toMinutes() < 0)
+                                Duration.between(sortedTaskSet.getStartTime().plus(sortedTaskSet.getDuration()),
+                                        startTaskTime).toMinutes() < 0)
                 .findAny();
 
         return result.isEmpty();
     }
-    /*.map(sortedTaskSet -> {
-                    if (Duration.between(sortedTaskSet.getStartTime(), startTaskTime).toMinutes() < 0 &&
-                            Duration.between(sortedTaskSet.getStartTime(), endTaskTime).toMinutes() > 0) {
-                        return true;
-                    } else if (Duration.between(sortedTaskSet.getStartTime(), startTaskTime).toMinutes() > 0 &&
-                            Duration.between(sortedTaskSet.getStartTime().plus(sortedTaskSet.getDuration()), startTaskTime).toMinutes() < 0) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                })*/ //.findFirst()
 
+    /**
+     * Метод для получения идентификатора
+     */
     private int getID() {
 
         return id++;
     }
 
+    /**
+     * Метод для изменения статуса эпика
+     */
     private void changeEpicStatus(Epic epic) {
         if (epic.getSubtaskID() != null) {
 
@@ -345,7 +347,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     }
 
-    /*Рассчитываем длительность выполнения задачи на основании длительности подзадач*/
+    /**
+     * Метод для расчета длительности эпика
+     */
     private void setEpicDuration(Epic epic) {
 
         epic.setEpicDuration(getAllSubtask().stream()
@@ -354,7 +358,9 @@ public class InMemoryTaskManager implements TaskManager {
                 .reduce(Duration.of(0, ChronoUnit.MINUTES), Duration::plus));
     }
 
-    //Задаем эпику начальное время
+    /**
+     * Метод для определения начального времени эпика
+     */
     private void setEpicStartTime(Epic epic) {
         try {
             if (getSubtaskWithEarlyTime(epic).isPresent()) {
@@ -367,14 +373,18 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    //Тут ищем эпик с самым ранним временем выполнения
+    /**
+     * Метод для поиска эпика с самым ранним временем начала
+     */
     private Optional<Subtask> getSubtaskWithEarlyTime(Epic epic) {
         return epic.getSubtaskID().stream()
                 .map(subtaskList::get)
                 .min(Comparator.comparing(Task::getStartTime));
     }
 
-    //Задаем эпику конечное время выполнения
+    /**
+     * Метод для определения времени окончания эпика
+     */
     private void setEpicEndTime(Epic epic) {
         try {
             if (getSubtaskWithLaterTime(epic).isPresent()) {
@@ -387,7 +397,9 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    //Получаем сабтаск с самым последним временем выполнения
+    /**
+     * Метод для получения подзадачи с самым поздним временем начала
+     */
     private Optional<Subtask> getSubtaskWithLaterTime(Epic epic) {
         return epic.getSubtaskID().stream()
                 .map(subtaskList::get)

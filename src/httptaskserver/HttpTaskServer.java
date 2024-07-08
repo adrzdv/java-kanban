@@ -22,13 +22,9 @@ public class HttpTaskServer {
     private Gson gson;
 
     public HttpTaskServer() throws IOException {
-        //Определяем базовый менеджер задач, в данном случае берем InMemoryTaskManager
         setTaskManager(Manager.getDefault());
-
-        //Определяем Gson объект для дальнейшей работы
         this.gson = setGson();
 
-        //Определяем обработчики для каждого пути
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         server.createContext("/tasks", new TaskHandler(taskManager, this.gson));
         server.createContext("/subtasks", new SubtaskHandler(taskManager, this.gson));
@@ -58,7 +54,9 @@ public class HttpTaskServer {
         this.taskManager = taskManager;
     }
 
-    //Определяем Gson объект, учитываем созданные TypeAdapter для работы с LocalDateTime и Duration
+    /**
+     * Метод для определения Gson-объекта
+     */
     public static Gson setGson() {
         return new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new DateTimeAdapter())

@@ -35,7 +35,9 @@ public class PrioritizedHandler extends HandlerBase implements HttpHandler {
         }
     }
 
-    //Метод для получения отсортированного по времени списка задач
+    /**
+     * Метод для получения отсортированного по времени списка задач
+     */
     public void getPrioritizedHandler(HttpExchange exchange, Gson gson) throws IOException {
         Set<Task> prioritizedTaskSet = getTaskManager().getTasksAsPriority();
         if (!prioritizedTaskSet.isEmpty()) {

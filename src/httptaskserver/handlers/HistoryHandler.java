@@ -36,7 +36,9 @@ public class HistoryHandler extends HandlerBase implements HttpHandler {
         }
     }
 
-    //Метод для получения истории просмотров из менеджера задач
+    /**
+     * Метод для получения истории просмотров из менеджера задач
+     */
     private void getHistoryHandler(HttpExchange exchange, Gson gson) throws IOException {
         List<Task> historyList = getTaskManager().getHistory();
         if (!historyList.isEmpty()) {

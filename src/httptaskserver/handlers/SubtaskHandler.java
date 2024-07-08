@@ -18,14 +18,14 @@ public class SubtaskHandler extends HandlerBase implements HttpHandler {
         super(manager, gson);
     }
 
+    /**
+     * Метод для обработки запроса, связанного с подзадачами
+     */
     @Override
     public void handle(HttpExchange exchange) {
         try {
             String path = exchange.getRequestURI().getPath();
             String method = exchange.getRequestMethod();
-
-            //Вызываем соответствующие методы в зависимости от метода запроса
-            //В каждом случае парсим строку и в зависимости от итога вызываем требуемый метод
 
             switch (method) {
                 case "GET":
@@ -74,7 +74,9 @@ public class SubtaskHandler extends HandlerBase implements HttpHandler {
         }
     }
 
-    //Метод для добавления подазачи в менеджер
+    /**
+     * Метод для добавления подзадачи
+     */
     private void postSubtaskHandler(HttpExchange exchange, Gson gson, String body) throws IOException {
         Subtask subtask = gson.fromJson(body, new SubtaskTypeToken().getType());
         if (!getTaskManager().checkDateInterval(subtask)) {
@@ -86,7 +88,9 @@ public class SubtaskHandler extends HandlerBase implements HttpHandler {
         }
     }
 
-    //Метод для удаления подзадачи из менеджера
+    /**
+     * Метод для удаления подзадачи по идентификатору
+     */
     private void deleteSubtaskHandler(HttpExchange exchange, String path) throws IOException {
         int idSubtask = getIdFromPath(path.replaceFirst("/subtasks/", ""));
         if (idSubtask != -1) {
@@ -97,7 +101,9 @@ public class SubtaskHandler extends HandlerBase implements HttpHandler {
         }
     }
 
-    //Метод для удаление всех подзадач
+    /**
+     * Метод для удаления всех подзадач
+     */
     private void getAllSubtasksHandler(HttpExchange exchange, Gson gson) throws IOException {
         List<Subtask> subtaskList = getTaskManager().getAllSubtask();
         if (!subtaskList.isEmpty()) {
@@ -108,7 +114,9 @@ public class SubtaskHandler extends HandlerBase implements HttpHandler {
         }
     }
 
-    //Метод для получения подзадачи по идентификатору
+    /**
+     * Метод для получения подзадачи по идентификатору
+     */
     private void getSubtaskByIdHandler(HttpExchange exchange, Gson gson, String path) throws IOException {
         int idSubtask = getIdFromPath(path.replaceFirst("/subtasks/", ""));
         if (idSubtask != -1) {

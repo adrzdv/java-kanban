@@ -18,14 +18,14 @@ public class TaskHandler extends HandlerBase implements HttpHandler {
         super(manager, gson);
     }
 
+    /**
+     * Метод для обработки запросов, связанных с задачей
+     */
     @Override
     public void handle(HttpExchange exchange) {
         try {
             String path = exchange.getRequestURI().getPath();
             String method = exchange.getRequestMethod();
-
-            //Вызываем соответствующие методы в зависимости от метода запроса
-            //В каждом случае парсим строку и в зависимости от итога вызываем требуемый метод
 
             switch (method) {
                 case "GET":
@@ -76,7 +76,9 @@ public class TaskHandler extends HandlerBase implements HttpHandler {
         }
     }
 
-    //Метод для удаления задачи по идентификатору
+    /**
+     * Метод для удаления задачи по идентификатору
+     */
     private void deleteTaskHandler(HttpExchange exchange, String path) throws IOException {
         int idTask = getIdFromPath(path.replaceFirst("/tasks/", ""));
         if (idTask != -1) {
@@ -87,7 +89,9 @@ public class TaskHandler extends HandlerBase implements HttpHandler {
         }
     }
 
-    //Метод для добавления задачи в менеджер
+    /**
+     * Метод для добавления задачи
+     */
     private void postTaskHandler(HttpExchange exchange, Gson gson, String body) throws IOException {
         Task task = gson.fromJson(body, new TaskTypeToken().getType());
         if (!getTaskManager().checkDateInterval(task)) {
@@ -99,7 +103,9 @@ public class TaskHandler extends HandlerBase implements HttpHandler {
         }
     }
 
-    //Метод для получения задачи по идентификатору
+    /**
+     * Метод для получения задачи по идентификатору
+     */
     private void getTaskByIdHandler(HttpExchange exchange, Gson gson, String path) throws IOException {
         int idTask = getIdFromPath(path.replaceFirst("/tasks/", ""));
         if (idTask != -1) {
@@ -115,7 +121,9 @@ public class TaskHandler extends HandlerBase implements HttpHandler {
         }
     }
 
-    //Метод для получения всех задач в менеджере
+    /**
+     * Метод для получения всех задач
+     */
     private void getAllTasksHandler(HttpExchange exchange, Gson gson) throws IOException {
         List<Task> taskList = getTaskManager().getAllTasks();
         if (!taskList.isEmpty()) {
