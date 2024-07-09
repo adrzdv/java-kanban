@@ -1,27 +1,23 @@
 package tests;
 
 import historymanager.HistoryManager;
-import taskmanager.ManagerSaveException;
-import tasks.*;
-import taskmanager.Manager;
-
-import static tasks.Status.IN_PROGRESS;
-import static tasks.Status.DONE;
-import static tasks.Status.NEW;
-
-import taskmanager.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import taskmanager.Manager;
+import taskmanager.ManagerSaveException;
+import taskmanager.TaskManager;
+import tasks.Epic;
+import tasks.Subtask;
+import tasks.Task;
 
 import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static tasks.Status.*;
 
 
 class TaskManagerTest {
@@ -45,29 +41,6 @@ class TaskManagerTest {
     public void shouldNotNullManager() {
         assertNotNull(manager.getDefaultHistory(), "Is null");
         assertNotNull(manager.getDefault(), "Is null");
-    }
-
-    @Test
-    public void shouldCoverOtherTask() throws ManagerSaveException {
-        Task taskOne = new Task("taskOne", "descriptionOne", NEW);
-        Task taskTwo = new Task("taskTwo", "descriptionOne", NEW);
-        Task taskThree = new Task("taskThree", "descriptionOne", NEW);
-        taskOne.setStartTime(LocalDateTime.of(2024, 1, 1, 1, 0));
-        taskTwo.setStartTime(LocalDateTime.of(2024, 1, 1, 0, 0));
-        taskThree.setStartTime(LocalDateTime.of(2024, 1, 1, 1, 29));
-        taskOne.setDuration(Duration.ofMinutes(45).toMinutes());
-        taskTwo.setDuration(Duration.ofMinutes(65).toMinutes());
-        taskThree.setDuration(Duration.ofMinutes(25).toMinutes());
-        fileManager.addTask(taskOne);
-        fileManager.addTask(taskTwo);
-        fileManager.addTask(taskThree);
-        taskManager.addTask(taskOne);
-        taskManager.addTask(taskTwo);
-        taskManager.addTask(taskThree);
-        assertFalse(fileManager.getAllTasks().contains(taskTwo), "Object found");
-        assertFalse(taskManager.getAllTasks().contains(taskTwo), "Object found");
-        assertFalse(fileManager.getAllTasks().contains(taskThree), "Object found");
-        assertFalse(taskManager.getAllTasks().contains(taskThree), "Object found");
     }
 
     @Test
@@ -209,6 +182,42 @@ class TaskManagerTest {
                 throw new ManagerSaveException("Попытка добавления существующего ID");
             }
         }, "Попытка добавления существующего ID");
+    }
+
+    @Test
+    void shouldOverlap() throws ManagerSaveException {
+        Task task1 = new Task("name",
+                "description",
+                NEW,
+                LocalDateTime.of(2024, 01, 01, 12, 00),
+                Duration.ofMinutes(60L));
+        Task task2 = new Task("anotherName",
+                "description",
+                NEW,
+                LocalDateTime.of(2024, 01, 01, 11, 50),
+                Duration.ofMinutes(60L));
+        Task task3 = new Task("anotherName",
+                "description",
+                NEW,
+                LocalDateTime.of(2024, 01, 01, 12, 15),
+                Duration.ofMinutes(60L));
+        Task task4 = new Task("anotherName",
+                "description",
+                NEW,
+                LocalDateTime.of(2024, 01, 01, 10, 00),
+                Duration.ofMinutes(60L));
+        Task task5 = new Task("anotherName",
+                "description",
+                NEW,
+                LocalDateTime.of(2024, 01, 01, 14, 00),
+                Duration.ofMinutes(60L));
+
+        taskManager.addTask(task1);
+        assertFalse(taskManager.checkDateInterval(task2));
+        assertFalse(taskManager.checkDateInterval(task3));
+        assertTrue(taskManager.checkDateInterval(task4));
+        assertTrue(taskManager.checkDateInterval(task5));
+
     }
 
 }

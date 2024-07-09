@@ -47,4 +47,6 @@ public interface TaskManager {
 
     public void setSortedTaskSet(Set<Task> setTask);
 
+    public boolean checkDateInterval(Task task);
+
 }

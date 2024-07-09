@@ -19,6 +19,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         this.fileName = fileName;
     }
 
+    /**
+     * Метод для сериализации менеджера
+     */
     public void save() {
 
         List<Task> taskListToOut = new ArrayList<>();
@@ -31,7 +34,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 throw new ManagerSaveException("Set a filename");
             }
 
-            /*Для сохранения получаем все имеющиеся в InMemoryTaskManager задачи, эпики и подзадачи*/
             taskListToOut = getAllTasks();
             epicListToOut = getAllEpic();
             subtaskListToOut = getAllSubtask();
@@ -40,7 +42,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 throw new ManagerSaveException("There're no tasks/subtasks/epic in Manager");
             }
 
-            /*Записываем заголовок в файл и переносим все элементы*/
             writer.write(HEADER + "\n");
             for (Task task : taskListToOut) {
                 writer.write(task.toString() + "\n");
@@ -57,6 +58,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         }
     }
 
+    /**
+     * Метод для десериализации менеджера
+     */
     public static FileBackedTaskManager loadFromFile(File fileForLoad) {
 
         FileBackedTaskManager backedTaskManager = new FileBackedTaskManager(fileForLoad);
@@ -68,7 +72,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             while (reader.ready()) {
                 inputString = reader.readLine().split(",");
 
-                //проверка строки на заголовок с целью ее пропуска:
                 boolean check = Arrays.equals(inputString, HEADER.split(","));
 
                 try {
@@ -84,7 +87,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                     idList.add(Integer.parseInt(inputString[0]));
                     switch (inputString[1]) {
 
-                        /*В зависимости от типа задачи собираем строки из файла в определенный класс*/
                         case "TASK":
                             stringToMerge = String.join(",", inputString[0], inputString[2], inputString[3],
                                     inputString[4], inputString[6], inputString[7]);
@@ -103,8 +105,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                             backedTaskManager.addSubtask(Subtask.subtaskFromString(stringToMerge));
                             break;
                     }
-                    //Определяем ключ для дальнейшей работы
-                    //Восстанавливаем отсортированный по времени список задач
+
                     backedTaskManager.generateNextId();
                     Set<Task> prioritizedTaskSet = backedTaskManager.getTasksAsPriority();
                     backedTaskManager.setSortedTaskSet(prioritizedTaskSet);
