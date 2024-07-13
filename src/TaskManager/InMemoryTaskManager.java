@@ -302,11 +302,7 @@ public class InMemoryTaskManager implements TaskManager {
         setSortedTaskSet(getTasksAsPriority());
 
         Optional<Task> result = sortedTaskSet.stream()
-                .filter(sortedTaskSet -> (Duration.between(sortedTaskSet.getStartTime(), startTaskTime).toMinutes() < 0
-                        && Duration.between(sortedTaskSet.getStartTime(), endTaskTime).toMinutes() > 0) ||
-                        Duration.between(sortedTaskSet.getStartTime(), startTaskTime).toMinutes() > 0 &&
-                                Duration.between(sortedTaskSet.getStartTime().plus(sortedTaskSet.getDuration()),
-                                        startTaskTime).toMinutes() < 0)
+                .filter(TaskPredicate.isAfter(task).or(TaskPredicate.isBefore(task)))
                 .findAny();
 
         return result.isEmpty();

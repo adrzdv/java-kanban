@@ -191,6 +191,11 @@ class TaskManagerTest {
                 NEW,
                 LocalDateTime.of(2024, 01, 01, 12, 00),
                 Duration.ofMinutes(60L));
+        Task taskEqualOne = new Task("name",
+                "description",
+                NEW,
+                LocalDateTime.of(2024, 01, 01, 12, 00),
+                Duration.ofMinutes(60L));
         Task task2 = new Task("anotherName",
                 "description",
                 NEW,
@@ -217,6 +222,7 @@ class TaskManagerTest {
         assertFalse(taskManager.checkDateInterval(task3));
         assertTrue(taskManager.checkDateInterval(task4));
         assertTrue(taskManager.checkDateInterval(task5));
+        assertFalse(taskManager.checkDateInterval(taskEqualOne));
 
     }
 
